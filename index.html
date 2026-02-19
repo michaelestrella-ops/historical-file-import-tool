@@ -85,6 +85,22 @@
             box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
         }
 
+        .txt-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .txt-btn:hover {
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .xlsx-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .xlsx-btn:hover {
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
         .file-type-badge {
             padding: 5px 12px;
             border-radius: 20px;
@@ -971,6 +987,24 @@
             color: #ef4444;
         }
 
+        .download-csv-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .download-csv-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
         /* Header Row Selector */
         .header-row-selector {
             display: flex;
@@ -1688,7 +1722,7 @@
                 
                 <div class="channel-section-body" id="channelSectionBody" style="display: none;">
                     <p style="color: #a1a1aa; margin-bottom: 20px;">
-                        Upload a PDF containing graphs and a CSV file with 1-second data to visually compare and identify which CSV columns correspond to the graphs in the PDF.
+                        Upload a PDF containing graphs and a CSV, TXT, or XLSX file with 1-second data to visually compare and identify which columns correspond to the graphs in the PDF. TXT and XLSX files will be automatically converted to CSV format.
                     </p>
                     
                     <!-- Upload Row -->
@@ -1704,14 +1738,14 @@
                             </div>
                         </div>
                         
-                        <div class="channel-upload-box" id="csvUploadBox" onclick="document.getElementById('channelCsvInput').click()">
-                            <input type="file" id="channelCsvInput" class="file-input" accept=".csv">
+                        <div class="channel-upload-box" id="historicalFileUploadBox" onclick="document.getElementById('channelHistoricalFileInput').click()">
+                            <input type="file" id="channelHistoricalFileInput" class="file-input" accept=".csv,.txt,.xlsx,.xls">
                             <div class="channel-upload-box-icon">📈</div>
-                            <div class="channel-upload-box-title">Upload CSV File</div>
-                            <div class="channel-upload-box-subtitle">CSV with 1-second data</div>
-                            <div class="channel-upload-box-file" id="csvFileName" style="display: none;">
+                            <div class="channel-upload-box-title">Upload Historical File</div>
+                            <div class="channel-upload-box-subtitle">CSV/TXT/XLSX with 1-second data</div>
+                            <div class="channel-upload-box-file" id="historicalFileName" style="display: none;">
                                 <span>✓</span>
-                                <span id="csvFileNameText"></span>
+                                <span id="historicalFileNameText"></span>
                             </div>
                         </div>
                     </div>
@@ -1765,6 +1799,9 @@
                                         <span id="csvBadgeFileName">No file loaded</span>
                                         <span class="csv-clear" onclick="clearCsvFile()" title="Clear CSV">×</span>
                                     </span>
+                                    <button id="downloadCsvBtn" class="download-csv-btn" onclick="downloadConvertedCsv()" style="display: none;" title="Download as CSV">
+                                        📥 Download CSV
+                                    </button>
                                 </div>
                             </div>
                             
@@ -1795,7 +1832,7 @@
                                     <div class="column-search-results" id="columnSearchResults"></div>
                                 </div>
                                 <div class="column-checkboxes" id="columnCheckboxes">
-                                    <div class="no-columns-message">Upload a CSV file to see available columns</div>
+                                    <div class="no-columns-message">Upload a CSV, TXT, or XLSX file to see available columns</div>
                                 </div>
                             </div>
                             
@@ -2401,6 +2438,9 @@
         let channelCsvRawText = null;
         let selectedColumns = new Set();
         let comparisonChartInstance = null;
+        let convertedCsvContent = null; // Store converted CSV content for download (TXT/XLSX files)
+        let currentFileType = null; // Track current file type (csv, txt, xlsx)
+        let currentFileName = null; // Track current file name
         const channelColors = [
             '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
             '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#14b8a6',
@@ -2433,17 +2473,26 @@
             }
         }
 
+        // Helper function to detect file type from filename
+        function detectFileType(fileName) {
+            const lowerName = fileName.toLowerCase();
+            if (lowerName.endsWith('.csv')) return 'csv';
+            if (lowerName.endsWith('.txt')) return 'txt';
+            if (lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls')) return 'xlsx';
+            return null;
+        }
+
         function initializeChannelIdentifier() {
             const pdfInput = document.getElementById('channelPdfInput');
             const pdfUploadBox = document.getElementById('pdfUploadBox');
-            const csvInput = document.getElementById('channelCsvInput');
-            const csvUploadBox = document.getElementById('csvUploadBox');
+            const historicalFileInput = document.getElementById('channelHistoricalFileInput');
+            const historicalFileUploadBox = document.getElementById('historicalFileUploadBox');
 
             if (pdfInput) {
                 pdfInput.addEventListener('change', handlePdfUpload);
             }
-            if (csvInput) {
-                csvInput.addEventListener('change', handleCsvUpload);
+            if (historicalFileInput) {
+                historicalFileInput.addEventListener('change', handleHistoricalFileUpload);
             }
 
             if (pdfUploadBox) {
@@ -2464,20 +2513,26 @@
                 });
             }
 
-            if (csvUploadBox) {
-                csvUploadBox.addEventListener('dragover', (e) => {
+            if (historicalFileUploadBox) {
+                historicalFileUploadBox.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    csvUploadBox.classList.add('dragover');
+                    historicalFileUploadBox.classList.add('dragover');
                 });
-                csvUploadBox.addEventListener('dragleave', () => {
-                    csvUploadBox.classList.remove('dragover');
+                historicalFileUploadBox.addEventListener('dragleave', () => {
+                    historicalFileUploadBox.classList.remove('dragover');
                 });
-                csvUploadBox.addEventListener('drop', (e) => {
+                historicalFileUploadBox.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    csvUploadBox.classList.remove('dragover');
+                    historicalFileUploadBox.classList.remove('dragover');
                     const files = e.dataTransfer.files;
-                    if (files.length > 0 && files[0].name.endsWith('.csv')) {
-                        handleCsvFile(files[0]);
+                    if (files.length > 0) {
+                        const file = files[0];
+                        const fileType = detectFileType(file.name);
+                        if (fileType) {
+                            handleDataFile(file, fileType);
+                        } else {
+                            alert('Please upload a CSV, TXT, or XLSX file.');
+                        }
                     }
                 });
             }
@@ -2659,29 +2714,193 @@
             checkLayoutVisibility();
         }
 
-        function handleCsvUpload(event) {
+        // Helper function to detect delimiter in TXT files
+        function detectDelimiter(line) {
+            if (!line || line.trim().length === 0) {
+                return ','; // Default to comma for empty lines
+            }
+            
+            // Detect the most likely delimiter in the line
+            const delimiters = [',', '\t', ';', '|', ' '];
+            let bestDelimiter = ',';
+            let maxColumns = 1;
+            let bestScore = 0;
+            
+            delimiters.forEach(delimiter => {
+                const columns = line.split(delimiter);
+                const score = columns.length;
+                
+                // Prefer delimiters that create more columns and have consistent column lengths
+                if (score > maxColumns) {
+                    maxColumns = score;
+                    bestDelimiter = delimiter;
+                    bestScore = score;
+                } else if (score === maxColumns) {
+                    // If same number of columns, prefer non-space delimiters
+                    if (delimiter !== ' ' && bestDelimiter === ' ') {
+                        bestDelimiter = delimiter;
+                    }
+                }
+            });
+            
+            // Validate that we have a reasonable number of columns
+            if (maxColumns < 2) {
+                console.warn('Warning: Detected delimiter resulted in very few columns, falling back to comma');
+                return ',';
+            }
+            
+            console.log(`Detected delimiter: "${bestDelimiter}" with ${maxColumns} columns`);
+            return bestDelimiter;
+        }
+
+        // Convert TXT file to CSV format
+        function convertTxtToCsv(txtContent, fileType) {
+            if (fileType !== 'txt') {
+                return txtContent; // Return as-is for non-TXT files
+            }
+            
+            if (!txtContent || txtContent.trim().length === 0) {
+                throw new Error('TXT file is empty or contains no valid content');
+            }
+            
+            const lines = txtContent.split('\n');
+            const convertedLines = [];
+            
+            let hasValidLines = false;
+            
+            lines.forEach((line, lineIndex) => {
+                if (line.trim()) {
+                    hasValidLines = true;
+                    const delimiter = detectDelimiter(line);
+                    let convertedLine = '';
+                    
+                    // Split by detected delimiter and convert to CSV format
+                    const columns = line.split(delimiter);
+                    columns.forEach((col, index) => {
+                        const trimmedCol = col.trim();
+                        
+                        // Add quotes if column contains comma, quotes, or newlines
+                        if (trimmedCol.includes(',') || trimmedCol.includes('"') || trimmedCol.includes('\n')) {
+                            // Escape existing quotes and wrap in quotes
+                            const escapedCol = trimmedCol.replace(/"/g, '""');
+                            convertedLine += `"${escapedCol}"`;
+                        } else {
+                            convertedLine += trimmedCol;
+                        }
+                        
+                        // Add comma separator (except for last column)
+                        if (index < columns.length - 1) {
+                            convertedLine += ',';
+                        }
+                    });
+                    
+                    convertedLines.push(convertedLine);
+                }
+            });
+            
+            if (!hasValidLines) {
+                throw new Error('TXT file contains no non-empty lines');
+            }
+            
+            return convertedLines.join('\n');
+        }
+
+        function handleHistoricalFileUpload(event) {
             const file = event.target.files[0];
-            if (file && file.name.endsWith('.csv')) {
-                handleCsvFile(file);
+            if (file) {
+                const fileType = detectFileType(file.name);
+                if (fileType) {
+                    handleDataFile(file, fileType);
+                } else {
+                    alert('Please upload a CSV, TXT, or XLSX file.');
+                }
             }
         }
 
-        function handleCsvFile(file) {
-            const csvUploadBox = document.getElementById('csvUploadBox');
-            const csvFileName = document.getElementById('csvFileName');
-            const csvFileNameText = document.getElementById('csvFileNameText');
+        function handleDataFile(file, fileType) {
+            // Update the historical file upload box
+            const historicalFileUploadBox = document.getElementById('historicalFileUploadBox');
+            const historicalFileName = document.getElementById('historicalFileName');
+            const historicalFileNameText = document.getElementById('historicalFileNameText');
             
-            csvUploadBox.classList.add('has-file');
-            csvFileName.style.display = 'flex';
-            csvFileNameText.textContent = file.name;
+            // Set the upload box to show file
+            historicalFileUploadBox.classList.add('has-file');
+            historicalFileName.style.display = 'flex';
+            historicalFileNameText.textContent = file.name;
             
             showChannelLayout();
             
             document.getElementById('csvBadgeFileName').textContent = file.name;
             
+            // Store file info
+            currentFileType = fileType;
+            currentFileName = file.name;
+            
+            // Handle XLSX files (binary format)
+            if (fileType === 'xlsx') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        
+                        // Get the first sheet
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        // Convert to CSV
+                        const csvContent = XLSX.utils.sheet_to_csv(worksheet);
+                        
+                        // Store converted content for download
+                        convertedCsvContent = csvContent;
+                        
+                        console.log('XLSX file converted to CSV format for processing');
+                        parseCsvData(csvContent);
+                        updateDownloadButton();
+                    } catch (error) {
+                        console.error('Error processing XLSX file:', error);
+                        alert('Error processing XLSX file: ' + error.message);
+                        convertedCsvContent = null;
+                        updateDownloadButton();
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+                return;
+            }
+            
+            // Handle CSV and TXT files (text format)
             const reader = new FileReader();
             reader.onload = function(e) {
-                parseCsvData(e.target.result);
+                try {
+                    let fileContent = e.target.result;
+                    
+                    // Convert TXT to CSV format if needed
+                    if (fileType === 'txt') {
+                        try {
+                            fileContent = convertTxtToCsv(fileContent, fileType);
+                            // Store converted content for download
+                            convertedCsvContent = fileContent;
+                            console.log('TXT file converted to CSV format for processing');
+                        } catch (conversionError) {
+                            console.error('Error converting TXT file:', conversionError);
+                            alert(`Error converting TXT file: ${conversionError.message}`);
+                            convertedCsvContent = null;
+                            updateDownloadButton();
+                            return;
+                        }
+                    } else {
+                        // CSV files - no conversion needed
+                        convertedCsvContent = null;
+                    }
+                    
+                    parseCsvData(fileContent);
+                    updateDownloadButton();
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    alert('Error processing file: ' + error.message);
+                    convertedCsvContent = null;
+                    updateDownloadButton();
+                }
             };
             reader.readAsText(file);
         }
@@ -2841,7 +3060,7 @@
             }
             
             if (channelCsvHeaders.length === 0) {
-                container.innerHTML = '<div class="no-columns-message">Upload a CSV file to see available columns</div>';
+                container.innerHTML = '<div class="no-columns-message">Upload a CSV, TXT, or XLSX file to see available columns</div>';
                 return;
             }
             
@@ -3196,13 +3415,19 @@
             channelCsvRawText = null;
             selectedColumns.clear();
             
-            const csvUploadBox = document.getElementById('csvUploadBox');
-            const csvFileName = document.getElementById('csvFileName');
-            const csvInput = document.getElementById('channelCsvInput');
+            const historicalFileUploadBox = document.getElementById('historicalFileUploadBox');
+            const historicalFileName = document.getElementById('historicalFileName');
+            const historicalFileInput = document.getElementById('channelHistoricalFileInput');
             
-            csvUploadBox.classList.remove('has-file');
-            csvFileName.style.display = 'none';
-            csvInput.value = '';
+            if (historicalFileUploadBox) {
+                historicalFileUploadBox.classList.remove('has-file');
+            }
+            if (historicalFileName) {
+                historicalFileName.style.display = 'none';
+            }
+            if (historicalFileInput) {
+                historicalFileInput.value = '';
+            }
             
             document.getElementById('channelHeaderRow').value = 1;
             
@@ -3211,7 +3436,7 @@
             document.getElementById('columnSearchResults').textContent = '';
             
             document.getElementById('csvBadgeFileName').textContent = 'No file loaded';
-            document.getElementById('columnCheckboxes').innerHTML = '<div class="no-columns-message">Upload a CSV file to see available columns</div>';
+            document.getElementById('columnCheckboxes').innerHTML = '<div class="no-columns-message">Upload a CSV, TXT, or XLSX file to see available columns</div>';
             
             if (comparisonChartInstance) {
                 comparisonChartInstance.destroy();
@@ -3223,6 +3448,59 @@
             document.getElementById('chartLegendContainer').style.display = 'none';
             
             checkLayoutVisibility();
+            
+            // Clear download button
+            convertedCsvContent = null;
+            currentFileType = null;
+            currentFileName = null;
+            updateDownloadButton();
+        }
+
+        function updateDownloadButton() {
+            const downloadBtn = document.getElementById('downloadCsvBtn');
+            if (downloadBtn) {
+                if (convertedCsvContent && (currentFileType === 'txt' || currentFileType === 'xlsx')) {
+                    downloadBtn.style.display = 'inline-block';
+                } else {
+                    downloadBtn.style.display = 'none';
+                }
+            }
+        }
+
+        function downloadConvertedCsv() {
+            if (!convertedCsvContent) {
+                alert('No converted content available for download.');
+                return;
+            }
+            
+            // Generate filename based on original file
+            let filename = 'converted.csv';
+            if (currentFileName) {
+                if (currentFileType === 'txt') {
+                    filename = currentFileName.replace(/\.txt$/i, '_converted.csv');
+                } else if (currentFileType === 'xlsx') {
+                    filename = currentFileName.replace(/\.(xlsx|xls)$/i, '_converted.csv');
+                }
+            }
+            
+            // Create a blob with the CSV content
+            const blob = new Blob([convertedCsvContent], { type: 'text/csv;charset=utf-8;' });
+            
+            // Create download link
+            const link = document.createElement('a');
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } else {
+                // Fallback for older browsers
+                window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(convertedCsvContent));
+            }
         }
 
         function showChannelLayout() {
