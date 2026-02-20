@@ -64,12 +64,12 @@
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.1rem;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 10px;
+            margin: 4px;
         }
 
         .upload-btn:hover {
@@ -214,11 +214,11 @@
         .compare-upload-zone {
             background: #1a1a2e;
             border: 2px dashed #4d4d6d;
-            border-radius: 12px;
-            padding: 30px;
+            border-radius: 8px;
+            padding: 12px;
             text-align: center;
             transition: all 0.3s ease;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .compare-upload-zone:hover {
@@ -234,12 +234,13 @@
 
         .compare-upload-zone p {
             color: #a1a1aa;
-            margin-bottom: 15px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
         }
 
         .compare-upload-buttons {
             display: flex;
-            gap: 15px;
+            gap: 6px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -1380,8 +1381,129 @@
             font-family: 'Consolas', 'Monaco', monospace;
         }
 
+        /* Chart axis scale toolbar (inside popup) */
+        .chart-axis-scale-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 16px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chart-axis-scale-label {
+            color: #a1a1aa;
+            font-size: 0.9rem;
+        }
+
+        .chart-axis-scale-toolbar label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #a1a1aa;
+            font-size: 0.875rem;
+        }
+
+        .chart-axis-scale-toolbar input[type="number"] {
+            width: 90px;
+            padding: 6px 10px;
+            background: #252536;
+            border: 1px solid #3d3d5c;
+            border-radius: 6px;
+            color: #e4e4e7;
+            font-size: 0.875rem;
+        }
+
+        .chart-axis-scale-toolbar input[type="number"]:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .chart-scale-apply-btn {
+            padding: 6px 14px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .chart-scale-apply-btn:hover {
+            background: #4f46e5;
+        }
+
+        .chart-scale-reset-btn {
+            padding: 6px 14px;
+            background: transparent;
+            color: #a1a1aa;
+            border: 1px solid #3d3d5c;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .chart-scale-reset-btn:hover {
+            color: #e4e4e7;
+            border-color: #71717a;
+        }
+
+        .chart-axis-scale-hint {
+            display: none;
+        }
+
+        /* Y-axis scale popup (shown only when Y-axis is clicked) */
+        .chart-scale-popup {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 20;
+            background: #1e1e2e;
+            border: 1px solid #3d3d5c;
+            border-radius: 10px;
+            padding: 12px 32px 12px 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .chart-scale-popup.show {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 16px;
+        }
+
+        .chart-scale-popup .chart-axis-scale-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 16px;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        .chart-scale-popup-close {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: #71717a;
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .chart-scale-popup-close:hover {
+            color: #e4e4e7;
+        }
+
         /* Comparison Chart */
         .comparison-chart-container {
+            position: relative;
             flex: 1;
             padding: 15px;
             min-height: 450px;
@@ -1413,8 +1535,8 @@
         /* Upload Sections in Channel Identifier */
         .channel-upload-row {
             display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         @media (max-width: 768px) {
@@ -1427,8 +1549,8 @@
             flex: 1;
             background: #1a1a2e;
             border: 2px dashed #4d4d6d;
-            border-radius: 12px;
-            padding: 25px;
+            border-radius: 8px;
+            padding: 12px 16px;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -1452,29 +1574,29 @@
         }
 
         .channel-upload-box-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 4px;
         }
 
         .channel-upload-box-title {
             color: #e4e4e7;
-            font-size: 1rem;
-            margin-bottom: 5px;
+            font-size: 0.875rem;
+            margin-bottom: 2px;
         }
 
         .channel-upload-box-subtitle {
             color: #71717a;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
 
         .channel-upload-box-file {
             color: #10b981;
-            font-size: 0.85rem;
-            margin-top: 10px;
+            font-size: 0.75rem;
+            margin-top: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         /* Resizable Panel Styles */
@@ -1598,7 +1720,8 @@
         .channel-identifier-layout .comparison-chart-container {
             flex: 1;
             min-height: 400px;
-            overflow: hidden;
+            overflow: visible;
+            padding-bottom: 30px;
         }
 
         /* Prevent text selection while dragging */
@@ -1841,6 +1964,17 @@
                             
                             <!-- Comparison Chart -->
                             <div class="comparison-chart-container">
+                                <div id="comparisonChartScalePopup" class="chart-scale-popup">
+                                    <button type="button" class="chart-scale-popup-close" onclick="closeComparisonChartScalePopup()" title="Close">×</button>
+                                    <div class="chart-axis-scale-toolbar comparison-chart-scale-toolbar" id="comparisonChartScaleToolbar">
+                                        <span class="chart-axis-scale-label">Y-axis scale:</span>
+                                        <label>Min <input type="number" id="comparisonChartYMin" step="any" placeholder="auto" title="Minimum value for Y axis"></label>
+                                        <label>Max <input type="number" id="comparisonChartYMax" step="any" placeholder="auto" title="Maximum value for Y axis"></label>
+                                        <button type="button" class="chart-scale-apply-btn" onclick="applyComparisonChartAxisScale()">Apply</button>
+                                        <button type="button" class="chart-scale-reset-btn" onclick="resetComparisonChartAxisScale()">Reset to auto</button>
+                                        <span class="chart-axis-scale-hint">Click the Y-axis on the chart to set scale</span>
+                                    </div>
+                                </div>
                                 <div class="chart-legend-container" id="chartLegendContainer" style="display: none;"></div>
                                 <canvas id="comparisonChart"></canvas>
                                 <div class="comparison-chart-placeholder" id="comparisonChartPlaceholder">
@@ -2977,6 +3111,8 @@
             populateColumnSelector();
             
             document.getElementById('comparisonChartPlaceholder').style.display = 'flex';
+            const scalePop = document.getElementById('comparisonChartScalePopup');
+            if (scalePop) scalePop.classList.remove('show');
         }
 
         function reprocessCsvWithNewHeaderRow() {
@@ -2994,6 +3130,8 @@
             }
             document.getElementById('comparisonChartPlaceholder').style.display = 'flex';
             document.getElementById('comparisonChart').style.display = 'none';
+            const compScalePopup = document.getElementById('comparisonChartScalePopup');
+            if (compScalePopup) compScalePopup.classList.remove('show');
         }
 
         function parseCSVLine(line) {
@@ -3291,11 +3429,16 @@
             const placeholder = document.getElementById('comparisonChartPlaceholder');
             const canvas = document.getElementById('comparisonChart');
             const legendContainer = document.getElementById('chartLegendContainer');
+            const scalePopup = document.getElementById('comparisonChartScalePopup');
             
             if (selectedColumns.size === 0 || !channelCsvData || channelCsvData.length === 0) {
                 placeholder.style.display = 'flex';
                 canvas.style.display = 'none';
                 legendContainer.style.display = 'none';
+                if (scalePopup) {
+                    scalePopup.classList.remove('show');
+                    document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
+                }
                 
                 if (comparisonChartInstance) {
                     comparisonChartInstance.destroy();
@@ -3307,6 +3450,10 @@
             placeholder.style.display = 'none';
             canvas.style.display = 'block';
             legendContainer.style.display = 'flex';
+            if (scalePopup) {
+                scalePopup.classList.remove('show');
+                document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
+            }
             
             const labels = channelCsvData.map((_, index) => index + 1);
             const datasets = [];
@@ -3360,6 +3507,9 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: { top: 10, right: 15, bottom: 25, left: 10 }
+                    },
                     interaction: {
                         mode: 'index',
                         intersect: false
@@ -3397,6 +3547,8 @@
                                 text: 'Value',
                                 color: '#a1a1aa'
                             },
+                            min: undefined,
+                            max: undefined,
                             ticks: {
                                 color: '#71717a'
                             },
@@ -3407,6 +3559,85 @@
                     }
                 }
             });
+
+            const compMinInput = document.getElementById('comparisonChartYMin');
+            const compMaxInput = document.getElementById('comparisonChartYMax');
+            if (compMinInput) compMinInput.value = '';
+            if (compMaxInput) compMaxInput.value = '';
+
+            function handleComparisonChartCanvasClick(e) {
+                if (!comparisonChartInstance) return;
+                const yScale = comparisonChartInstance.scales.y;
+                if (!yScale) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                if (x >= yScale.left - 8 && x <= yScale.right + 8) {
+                    const popup = document.getElementById('comparisonChartScalePopup');
+                    if (popup) {
+                        popup.classList.add('show');
+                        const inp = document.getElementById('comparisonChartYMin');
+                        if (inp) inp.focus();
+                        setTimeout(function() {
+                            document.addEventListener('click', closeComparisonChartScalePopupOnClickOutside);
+                        }, 0);
+                    }
+                }
+            }
+            function handleComparisonChartCanvasMouseMove(e) {
+                if (!comparisonChartInstance) return;
+                const yScale = comparisonChartInstance.scales.y;
+                if (!yScale) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const onAxis = x >= yScale.left - 8 && x <= yScale.right + 8;
+                canvas.style.cursor = onAxis ? 'pointer' : 'default';
+            }
+            canvas.removeEventListener('click', handleComparisonChartCanvasClick);
+            canvas.removeEventListener('mousemove', handleComparisonChartCanvasMouseMove);
+            canvas.addEventListener('click', handleComparisonChartCanvasClick);
+            canvas.addEventListener('mousemove', handleComparisonChartCanvasMouseMove);
+
+            if (compMinInput) compMinInput.onkeydown = function(e) { if (e.key === 'Enter') applyComparisonChartAxisScale(); };
+            if (compMaxInput) compMaxInput.onkeydown = function(e) { if (e.key === 'Enter') applyComparisonChartAxisScale(); };
+        }
+
+        function applyComparisonChartAxisScale() {
+            if (!comparisonChartInstance) return;
+            const minInput = document.getElementById('comparisonChartYMin');
+            const maxInput = document.getElementById('comparisonChartYMax');
+            const minVal = minInput ? minInput.value.trim() : '';
+            const maxVal = maxInput ? maxInput.value.trim() : '';
+            const scale = comparisonChartInstance.options.scales.y;
+            scale.min = minVal === '' ? undefined : parseFloat(minVal);
+            scale.max = maxVal === '' ? undefined : parseFloat(maxVal);
+            if (minVal !== '' && isNaN(scale.min)) return;
+            if (maxVal !== '' && isNaN(scale.max)) return;
+            comparisonChartInstance.update();
+        }
+
+        function resetComparisonChartAxisScale() {
+            if (!comparisonChartInstance) return;
+            const minInput = document.getElementById('comparisonChartYMin');
+            const maxInput = document.getElementById('comparisonChartYMax');
+            if (minInput) minInput.value = '';
+            if (maxInput) maxInput.value = '';
+            comparisonChartInstance.options.scales.y.min = undefined;
+            comparisonChartInstance.options.scales.y.max = undefined;
+            comparisonChartInstance.update();
+        }
+
+        function closeComparisonChartScalePopup() {
+            const popup = document.getElementById('comparisonChartScalePopup');
+            if (popup) popup.classList.remove('show');
+            document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
+        }
+
+        function closeComparisonChartScalePopupOnClickOutside(e) {
+            const popup = document.getElementById('comparisonChartScalePopup');
+            if (popup && popup.classList.contains('show') && !popup.contains(e.target)) {
+                popup.classList.remove('show');
+                document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
+            }
         }
 
         function clearCsvFile() {
@@ -3446,6 +3677,11 @@
             document.getElementById('comparisonChartPlaceholder').style.display = 'flex';
             document.getElementById('comparisonChart').style.display = 'none';
             document.getElementById('chartLegendContainer').style.display = 'none';
+            const comparisonScalePopup = document.getElementById('comparisonChartScalePopup');
+            if (comparisonScalePopup) {
+                comparisonScalePopup.classList.remove('show');
+                document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
+            }
             
             checkLayoutVisibility();
             
