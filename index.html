@@ -115,6 +115,11 @@
             color: white;
         }
 
+        .txt-indicator {
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            color: white;
+        }
+
         .xlsx-indicator {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
@@ -1114,9 +1119,82 @@
             border-color: #6366f1;
         }
 
+        /* Column filters row (search + avg range) */
+        .column-filters-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .column-avg-filter-container {
+            flex-shrink: 0;
+        }
+
+        .column-avg-filter-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .column-avg-filter-label {
+            color: #a1a1aa;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .column-avg-input {
+            width: 72px;
+            padding: 8px 10px;
+            background: #1e1e2e;
+            border: 1px solid #3d3d5c;
+            border-radius: 6px;
+            color: #e4e4e7;
+            font-size: 0.85rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .column-avg-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .column-avg-input::placeholder {
+            color: #71717a;
+        }
+
+        .column-avg-sep {
+            color: #71717a;
+            font-size: 0.8rem;
+        }
+
+        .column-avg-clear {
+            display: none;
+            background: none;
+            border: none;
+            color: #71717a;
+            cursor: pointer;
+            padding: 2px 6px;
+            font-size: 1rem;
+            line-height: 1;
+            border-radius: 4px;
+        }
+
+        .column-avg-clear:hover {
+            color: #e4e4e7;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .column-avg-clear.visible {
+            display: inline-block;
+        }
+
         /* Column Search Input */
         .column-search-container {
-            margin-bottom: 10px;
+            margin-bottom: 0;
         }
 
         .column-search-input {
@@ -1143,6 +1221,7 @@
 
         .column-search-wrapper {
             position: relative;
+            max-width: 280px;
         }
 
         .column-search-icon {
@@ -1773,7 +1852,7 @@
     <div class="container">
         <div class="header">
             <h1>📂 Historical File Import Tool</h1>
-            <p>Compare CSV/XLSX headers and identify channels from PDF vs CSV data</p>
+            <p>Compare CSV/XLSX headers and identify channels from PDF vs CSV data · v4</p>
         </div>
 
         <div class="content">
@@ -1785,7 +1864,7 @@
                 </div>
                 
                 <div class="compare-section-body" id="compareSectionBody" style="display: none;">
-                    <p style="color: #a1a1aa; margin-bottom: 20px;">Upload multiple CSV/XLSX files to compare their headers. Headers must match exactly (spacing, characters, everything).</p>
+                    <p style="color: #a1a1aa; margin-bottom: 20px;">Upload multiple CSV, TXT, or XLSX files to compare their headers. Headers must match exactly (spacing, characters, everything). You can bulk convert XLSX or TXT files to CSV while comparing.</p>
                     
                     <div class="header-row-input-group">
                         <label for="compareHeaderRow">Header Row Number:</label>
@@ -1796,9 +1875,9 @@
                     <div class="compare-upload-zone" id="compareUploadZone">
                         <p>Drag and drop files here, or click to upload</p>
                         <div class="compare-upload-buttons">
-                            <input type="file" id="compareFileInput" class="file-input" accept=".csv,.xlsx,.xls" multiple>
+                            <input type="file" id="compareFileInput" class="file-input" accept=".csv,.txt,.xlsx,.xls" multiple>
                             <button class="upload-btn csv-btn" onclick="document.getElementById('compareFileInput').click()">
-                                📁 Upload CSV/XLSX Files
+                                📁 Upload CSV/TXT/XLSX Files
                             </button>
                         </div>
                     </div>
@@ -1807,14 +1886,13 @@
                         <!-- Uploaded files will be listed here -->
                     </div>
                     
-                    <!-- Bulk XLSX to CSV conversion button -->
+                    <!-- Bulk XLSX/TXT to CSV conversion -->
                     <div class="bulk-convert-container" id="bulkConvertContainer" style="display: none;">
                         <div class="bulk-convert-info">
-                            <span class="xlsx-indicator file-type-badge">XLSX</span>
-                            <span id="xlsxFileCount">0</span> Excel file(s) detected
+                            <span id="bulkConvertFileCounts"><span class="xlsx-indicator file-type-badge">XLSX</span> <span id="xlsxFileCount">0</span> · <span class="txt-indicator file-type-badge">TXT</span> <span id="txtFileCount">0</span></span> file(s) to convert to CSV
                         </div>
-                        <button class="bulk-convert-btn" id="bulkConvertBtn" onclick="bulkConvertXlsxToCsv()">
-                            📥 Convert All XLSX to CSV & Download
+                        <button class="bulk-convert-btn" id="bulkConvertBtn" onclick="bulkConvertToCsv()">
+                            📥 Convert All to CSV & Download
                         </button>
                     </div>
                     
@@ -1946,13 +2024,24 @@
                                         <button class="column-action-btn" onclick="clearAllColumns()">Clear All</button>
                                     </div>
                                 </div>
-                                <div class="column-search-container">
-                                    <div class="column-search-wrapper">
-                                        <span class="column-search-icon">🔍</span>
-                                        <input type="text" class="column-search-input" id="columnSearchInput" placeholder="Search columns..." oninput="filterColumns(this.value)">
-                                        <button class="column-search-clear" id="columnSearchClear" onclick="clearColumnSearch()" title="Clear search">×</button>
+                                <div class="column-filters-row">
+                                    <div class="column-search-container">
+                                        <div class="column-search-wrapper">
+                                            <span class="column-search-icon">🔍</span>
+                                            <input type="text" class="column-search-input" id="columnSearchInput" placeholder="Search columns..." oninput="applyColumnFilters()">
+                                            <button class="column-search-clear" id="columnSearchClear" onclick="clearColumnSearch()" title="Clear search">×</button>
+                                        </div>
+                                        <div class="column-search-results" id="columnSearchResults"></div>
                                     </div>
-                                    <div class="column-search-results" id="columnSearchResults"></div>
+                                    <div class="column-avg-filter-container">
+                                        <div class="column-avg-filter-wrapper">
+                                            <span class="column-avg-filter-label">Avg range:</span>
+                                            <input type="number" class="column-avg-input" id="columnAvgMin" step="any" placeholder="Min" title="Minimum average value" oninput="applyColumnFilters()">
+                                            <span class="column-avg-sep">to</span>
+                                            <input type="number" class="column-avg-input" id="columnAvgMax" step="any" placeholder="Max" title="Maximum average value" oninput="applyColumnFilters()">
+                                            <button type="button" class="column-avg-clear" id="columnAvgClear" onclick="clearAvgFilter()" title="Clear average filter">×</button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="column-checkboxes" id="columnCheckboxes">
                                     <div class="no-columns-message">Upload a CSV, TXT, or XLSX file to see available columns</div>
@@ -2045,7 +2134,7 @@
         function handleCompareFiles(files) {
             for (let file of files) {
                 const ext = file.name.split('.').pop().toLowerCase();
-                if (['csv', 'xlsx', 'xls'].includes(ext)) {
+                if (['csv', 'txt', 'xlsx', 'xls'].includes(ext)) {
                     if (!compareFiles.find(f => f.name === file.name && f.size === file.size)) {
                         compareFiles.push(file);
                     }
@@ -2072,21 +2161,28 @@
             clearBtn.style.display = 'inline-block';
             compareBtn.disabled = compareFiles.length < 2;
             
+            // Count XLSX and TXT files (convertible to CSV)
             const xlsxFiles = compareFiles.filter(f => {
                 const ext = f.name.split('.').pop().toLowerCase();
                 return ['xlsx', 'xls'].includes(ext);
             });
+            const txtFiles = compareFiles.filter(f => {
+                const ext = f.name.split('.').pop().toLowerCase();
+                return ext === 'txt';
+            });
+            const txtFileCountSpan = document.getElementById('txtFileCount');
             
-            if (xlsxFiles.length > 0) {
+            if (xlsxFiles.length > 0 || txtFiles.length > 0) {
                 bulkConvertContainer.style.display = 'flex';
                 xlsxFileCountSpan.textContent = xlsxFiles.length;
+                txtFileCountSpan.textContent = txtFiles.length;
             } else {
                 bulkConvertContainer.style.display = 'none';
             }
             
             fileList.innerHTML = compareFiles.map((file, index) => {
                 const ext = file.name.split('.').pop().toLowerCase();
-                const badgeClass = ext === 'csv' ? 'csv-indicator' : 'xlsx-indicator';
+                const badgeClass = ext === 'csv' ? 'csv-indicator' : (ext === 'txt' ? 'txt-indicator' : 'xlsx-indicator');
                 return `
                     <div class="compare-file-item">
                         <div class="compare-file-info">
@@ -2118,14 +2214,19 @@
             document.getElementById('compareResults').classList.remove('show');
         }
         
-        async function bulkConvertXlsxToCsv() {
+        async function bulkConvertToCsv() {
             const xlsxFiles = compareFiles.filter(f => {
                 const ext = f.name.split('.').pop().toLowerCase();
                 return ['xlsx', 'xls'].includes(ext);
             });
+            const txtFiles = compareFiles.filter(f => {
+                const ext = f.name.split('.').pop().toLowerCase();
+                return ext === 'txt';
+            });
+            const convertibleFiles = [...xlsxFiles, ...txtFiles];
             
-            if (xlsxFiles.length === 0) {
-                alert('No XLSX files to convert.');
+            if (convertibleFiles.length === 0) {
+                alert('No XLSX or TXT files to convert.');
                 return;
             }
             
@@ -2134,23 +2235,58 @@
             bulkBtn.textContent = '⏳ Converting...';
             
             try {
-                for (let file of xlsxFiles) {
-                    await convertAndDownloadXlsx(file);
+                for (let file of convertibleFiles) {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    if (['xlsx', 'xls'].includes(ext)) {
+                        await convertAndDownloadXlsx(file);
+                    } else if (ext === 'txt') {
+                        await convertAndDownloadTxt(file);
+                    }
                     await new Promise(resolve => setTimeout(resolve, 300));
                 }
                 
                 bulkBtn.textContent = '✅ Downloaded!';
                 setTimeout(() => {
-                    bulkBtn.textContent = '📥 Convert All XLSX to CSV & Download';
+                    bulkBtn.textContent = '📥 Convert All to CSV & Download';
                     bulkBtn.disabled = false;
                 }, 2000);
                 
             } catch (error) {
-                console.error('Error converting XLSX files:', error);
+                console.error('Error converting files:', error);
                 alert('Error converting files: ' + error.message);
-                bulkBtn.textContent = '📥 Convert All XLSX to CSV & Download';
+                bulkBtn.textContent = '📥 Convert All to CSV & Download';
                 bulkBtn.disabled = false;
             }
+        }
+        
+        function convertAndDownloadTxt(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const content = e.target.result;
+                        const csvContent = convertTxtToCsv(content, 'txt');
+                        const downloadFileName = file.name.replace(/\.txt$/i, '.csv');
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const link = document.createElement('a');
+                        if (link.download !== undefined) {
+                            const url = URL.createObjectURL(blob);
+                            link.setAttribute('href', url);
+                            link.setAttribute('download', downloadFileName);
+                            link.style.visibility = 'hidden';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                        }
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = () => reject(new Error('Failed to read file: ' + file.name));
+                reader.readAsText(file);
+            });
         }
         
         function convertAndDownloadXlsx(file) {
@@ -2211,6 +2347,10 @@
                         const content = await readFileAsText(file);
                         headers = parseCompareHeaders(content, headerRow, 'csv');
                         csvContent = content;
+                    } else if (ext === 'txt') {
+                        const content = await readFileAsText(file);
+                        csvContent = convertTxtToCsv(content, 'txt');
+                        headers = parseCompareHeaders(csvContent, headerRow, 'csv');
                     } else if (['xlsx', 'xls'].includes(ext)) {
                         const result = await parseXlsxForCompare(file, headerRow);
                         headers = result.headers;
@@ -2221,7 +2361,8 @@
                         file: file,
                         headers: headers,
                         csvContent: csvContent,
-                        isXlsx: ['xlsx', 'xls'].includes(ext)
+                        isXlsx: ['xlsx', 'xls'].includes(ext),
+                        isTxt: ext === 'txt'
                     };
                 }
                 
@@ -3193,9 +3334,17 @@
             const searchInput = document.getElementById('columnSearchInput');
             if (searchInput) {
                 searchInput.value = '';
-                document.getElementById('columnSearchClear').classList.remove('visible');
-                document.getElementById('columnSearchResults').textContent = '';
+                const clearBtn = document.getElementById('columnSearchClear');
+                if (clearBtn) clearBtn.classList.remove('visible');
+                const resultsDiv = document.getElementById('columnSearchResults');
+                if (resultsDiv) resultsDiv.textContent = '';
             }
+            const avgMin = document.getElementById('columnAvgMin');
+            const avgMax = document.getElementById('columnAvgMax');
+            const avgClear = document.getElementById('columnAvgClear');
+            if (avgMin) avgMin.value = '';
+            if (avgMax) avgMax.value = '';
+            if (avgClear) avgClear.classList.remove('visible');
             
             if (channelCsvHeaders.length === 0) {
                 container.innerHTML = '<div class="no-columns-message">Upload a CSV, TXT, or XLSX file to see available columns</div>';
@@ -3256,6 +3405,11 @@
                 
                 const item = document.createElement('label');
                 item.className = 'column-checkbox-item' + (col.isNumeric ? '' : ' non-numeric');
+                if (col.isNumeric && col.average != null) {
+                    item.setAttribute('data-average', String(col.average));
+                } else {
+                    item.setAttribute('data-average', '');
+                }
                 item.innerHTML = `
                     <input type="checkbox" value="${col.header}" onchange="toggleColumn('${col.header.replace(/'/g, "\\'")}', this.checked)" ${col.isNumeric ? '' : 'disabled'}>
                     <span class="column-color-dot" style="background-color: ${color}"></span>
@@ -3361,42 +3515,66 @@
             updateComparisonChart();
         }
 
-        function filterColumns(searchTerm) {
+        function applyColumnFilters() {
+            const searchInput = document.getElementById('columnSearchInput');
+            const normalizedSearch = (searchInput && searchInput.value) ? searchInput.value.toLowerCase().trim() : '';
+            const minInput = document.getElementById('columnAvgMin');
+            const maxInput = document.getElementById('columnAvgMax');
+            const minStr = minInput ? minInput.value.trim() : '';
+            const maxStr = maxInput ? maxInput.value.trim() : '';
+            const avgFilterActive = minStr !== '' || maxStr !== '';
+            const minVal = minStr === '' ? -Infinity : parseFloat(minStr);
+            const maxVal = maxStr === '' ? Infinity : parseFloat(maxStr);
+            const minValid = minStr === '' || !isNaN(minVal);
+            const maxValid = maxStr === '' || !isNaN(maxVal);
+
             const items = document.querySelectorAll('#columnCheckboxes .column-checkbox-item');
             const clearBtn = document.getElementById('columnSearchClear');
+            const avgClearBtn = document.getElementById('columnAvgClear');
             const resultsDiv = document.getElementById('columnSearchResults');
-            const normalizedSearch = searchTerm.toLowerCase().trim();
             const zeroSection = document.querySelector('#columnCheckboxes .zero-columns-section');
-            
-            if (normalizedSearch) {
-                clearBtn.classList.add('visible');
-            } else {
-                clearBtn.classList.remove('visible');
+
+            if (clearBtn) {
+                clearBtn.classList.toggle('visible', !!normalizedSearch);
             }
-            
+            if (avgClearBtn) {
+                avgClearBtn.classList.toggle('visible', avgFilterActive);
+            }
+
             let visibleCount = 0;
             let totalCount = items.length;
             let zeroSectionVisibleCount = 0;
-            
+
             items.forEach(item => {
                 const label = item.querySelector('.column-checkbox-label');
                 const columnName = label ? label.textContent.toLowerCase() : '';
-                const isInZeroSection = item.closest('.zero-columns-section') !== null;
-                
-                if (!normalizedSearch || columnName.includes(normalizedSearch)) {
+                const nameMatch = !normalizedSearch || columnName.includes(normalizedSearch);
+
+                const dataAvg = item.getAttribute('data-average') || '';
+                let avgMatch = true;
+                if (avgFilterActive && minValid && maxValid) {
+                    if (dataAvg === '') {
+                        avgMatch = false;
+                    } else {
+                        const avg = parseFloat(dataAvg);
+                        avgMatch = !isNaN(avg) && avg >= minVal && avg <= maxVal;
+                    }
+                }
+
+                const show = nameMatch && avgMatch;
+                if (show) {
                     item.classList.remove('hidden');
                     visibleCount++;
-                    if (isInZeroSection) zeroSectionVisibleCount++;
+                    if (item.closest('.zero-columns-section')) zeroSectionVisibleCount++;
                 } else {
                     item.classList.add('hidden');
                 }
             });
-            
+
             if (zeroSection) {
                 const zeroHeader = zeroSection.querySelector('.zero-columns-header');
                 const zeroBody = zeroSection.querySelector('.zero-columns-body');
-                
-                if (normalizedSearch) {
+                if (normalizedSearch || avgFilterActive) {
                     if (zeroSectionVisibleCount > 0) {
                         zeroSection.style.display = '';
                         zeroHeader.classList.add('expanded');
@@ -3410,19 +3588,35 @@
                     zeroBody.classList.remove('expanded');
                 }
             }
-            
-            if (normalizedSearch && totalCount > 0) {
-                resultsDiv.textContent = `Showing ${visibleCount} of ${totalCount} columns`;
-            } else {
-                resultsDiv.textContent = '';
+
+            if (resultsDiv) {
+                if ((normalizedSearch || avgFilterActive) && totalCount > 0) {
+                    resultsDiv.textContent = `Showing ${visibleCount} of ${totalCount} columns`;
+                } else {
+                    resultsDiv.textContent = '';
+                }
             }
+        }
+
+        function filterColumns(searchTerm) {
+            const searchInput = document.getElementById('columnSearchInput');
+            if (searchInput) searchInput.value = searchTerm || '';
+            applyColumnFilters();
         }
 
         function clearColumnSearch() {
             const searchInput = document.getElementById('columnSearchInput');
-            searchInput.value = '';
-            filterColumns('');
+            if (searchInput) searchInput.value = '';
+            applyColumnFilters();
             searchInput.focus();
+        }
+
+        function clearAvgFilter() {
+            const minInput = document.getElementById('columnAvgMin');
+            const maxInput = document.getElementById('columnAvgMax');
+            if (minInput) minInput.value = '';
+            if (maxInput) maxInput.value = '';
+            applyColumnFilters();
         }
 
         function updateComparisonChart() {
