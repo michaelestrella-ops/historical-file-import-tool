@@ -104,25 +104,23 @@
         .file-type-badge {
             padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
             text-transform: uppercase;
-            margin-right: 10px;
+            letter-spacing: 0.5px;
         }
 
         .csv-indicator {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
         }
 
         .txt-indicator {
             background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
-            color: white;
         }
 
         .xlsx-indicator {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
         }
 
         /* Header Comparison Section Styles */
@@ -1840,6 +1838,901 @@
                 display: none;
             }
         }
+
+        /* ============================================
+           ZIPPER SWING WELLS SECTION STYLES
+           ============================================ */
+        .zipper-section {
+            background: #252536;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #3d3d5c;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.zipper-section-expanded .zipper-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            margin: 0;
+            border-radius: 0;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e2e;
+        }
+
+        body.zipper-section-expanded .zipper-section-body {
+            flex: 1;
+            display: block !important;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        body.zipper-section-expanded .zipper-section-header {
+            border-radius: 0;
+            flex-shrink: 0;
+        }
+
+        body.zipper-section-expanded .zipper-upload-area {
+            flex-shrink: 0;
+        }
+
+        body.zipper-section-expanded .zipper-chart-wrapper {
+            height: 400px;
+        }
+
+        .zipper-section-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 30px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            user-select: none;
+            position: relative;
+            background: linear-gradient(135deg, #252536 0%, #1a1a2e 100%);
+        }
+
+        .zipper-section-header:hover {
+            background: linear-gradient(135deg, #2a2a4a 0%, #1e1e3e 100%);
+        }
+
+        .zipper-section-header h3 {
+            color: #e4e4e7;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .zipper-section-toggle {
+            color: #71717a;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            position: absolute;
+            right: 30px;
+        }
+
+        .zipper-section-header.expanded .zipper-section-toggle {
+            transform: rotate(180deg);
+        }
+
+        .zipper-section-body {
+            padding: 25px 30px;
+        }
+
+        .zipper-upload-area {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .zipper-upload-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #1a1a2e;
+            border: 2px dashed #4d4d6d;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .zipper-upload-box:hover {
+            border-color: #6366f1;
+            background: #22223a;
+        }
+
+        .zipper-upload-box.dragover {
+            border-color: #818cf8;
+            background: #2d2d4d;
+            transform: scale(1.01);
+        }
+
+        .zipper-upload-box.has-files {
+            border-style: solid;
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .zipper-file-list {
+            background: #1e1e2e;
+            border: 1px solid #2d2d44;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+
+        .zipper-file-list-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .zipper-file-list-title {
+            color: #e4e4e7;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .zipper-file-count {
+            color: #71717a;
+            font-size: 0.8rem;
+            background: #252536;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        .zipper-add-more-btn {
+            margin-left: auto;
+            background: transparent;
+            color: #8b5cf6;
+            border: 1px solid #8b5cf6;
+            padding: 4px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.15s;
+        }
+
+        .zipper-add-more-btn:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .zipper-well-files-area {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .zipper-well-pill {
+            background: #1e1e2e;
+            border: 1px solid #3d3d5c;
+            border-radius: 8px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .zipper-well-pill .well-color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .zipper-well-pill .well-name {
+            color: #e4e4e7;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .zipper-well-pill .well-remove {
+            color: #71717a;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            transition: color 0.15s;
+            padding: 0 2px;
+        }
+
+        .zipper-well-pill .well-remove:hover {
+            color: #ef4444;
+        }
+
+        /* Active File Selector */
+        .zipper-active-file {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 10px 16px;
+            background: #1e1e2e;
+            border: 1px solid #2d2d44;
+            border-radius: 8px;
+        }
+
+        .zipper-active-file-label {
+            color: #a1a1aa;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .zipper-active-file-select {
+            flex: 1;
+            max-width: 350px;
+            background: #252536;
+            border: 1px solid #3d3d5c;
+            color: #e4e4e7;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .zipper-active-file-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        /* Searchable Combo-box Dropdowns */
+        .zipper-column-selectors {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .zipper-combo-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .zipper-combo-label {
+            display: block;
+            color: #a1a1aa;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .zipper-lock-icon {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .zipper-required {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .zipper-combo {
+            position: relative;
+        }
+
+        .zipper-combo-input {
+            width: 100%;
+            background: #1e1e2e;
+            border: 2px solid #3d3d5c;
+            color: #e4e4e7;
+            padding: 10px 36px 10px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .zipper-combo-input::placeholder {
+            color: #52525b;
+        }
+
+        .zipper-combo-input:focus {
+            border-color: #8b5cf6;
+        }
+
+        .zipper-combo-input.has-value {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .zipper-combo-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #71717a;
+            cursor: pointer;
+            font-size: 0.9rem;
+            line-height: 1;
+            user-select: none;
+            z-index: 1;
+        }
+
+        .zipper-combo-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1e1e2e;
+            border: 2px solid #8b5cf6;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .zipper-combo-dropdown.open {
+            display: block;
+        }
+
+        .zipper-combo-option {
+            padding: 9px 14px;
+            color: #e4e4e7;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.1s;
+            border-bottom: 1px solid #2d2d44;
+        }
+
+        .zipper-combo-option:last-child {
+            border-bottom: none;
+        }
+
+        .zipper-combo-option:hover {
+            background: #2d2d4d;
+        }
+
+        .zipper-combo-option.highlighted {
+            background: #3d3d5c;
+        }
+
+        .zipper-combo-option .combo-match {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .zipper-combo-no-results {
+            padding: 10px 14px;
+            color: #52525b;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        .zipper-combo-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .zipper-combo-dropdown::-webkit-scrollbar-track {
+            background: #1e1e2e;
+        }
+
+        .zipper-combo-dropdown::-webkit-scrollbar-thumb {
+            background: #3d3d5c;
+            border-radius: 3px;
+        }
+
+        .zipper-config-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            background: #1e1e2e;
+            border-radius: 10px;
+            border: 1px solid #2d2d44;
+        }
+
+        .zipper-config-bar label {
+            color: #a1a1aa;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .zipper-config-bar select,
+        .zipper-config-bar input[type="number"] {
+            background: #252536;
+            border: 1px solid #3d3d5c;
+            color: #e4e4e7;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .zipper-config-bar select:focus,
+        .zipper-config-bar input[type="number"]:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .zipper-plot-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .zipper-plot-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .zipper-plot-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .zipper-clear-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .zipper-clear-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .zipper-main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        
+
+        .zipper-chart-wrapper {
+            background: #1e1e2e;
+            border: 1px solid #2d2d44;
+            border-radius: 12px;
+            padding: 15px;
+            position: relative;
+            height: 400px;
+        }
+
+        .zipper-chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: #71717a;
+            gap: 10px;
+        }
+
+        .zipper-chart-placeholder-icon {
+            font-size: 2.5rem;
+            opacity: 0.5;
+        }
+
+        .zipper-chart-legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .zipper-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #a1a1aa;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        .zipper-legend-item:hover {
+            background: #252536;
+        }
+
+        .zipper-legend-item.hidden {
+            opacity: 0.4;
+        }
+
+        .zipper-legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .zipper-header-row-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .zipper-header-row-selector label {
+            color: #a1a1aa;
+            font-size: 0.85rem;
+        }
+
+        .zipper-header-row-selector input[type="number"] {
+            width: 60px;
+            background: #252536;
+            border: 1px solid #3d3d5c;
+            color: #e4e4e7;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .zipper-header-row-selector input[type="number"]:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .zipper-header-row-selector .zipper-header-apply-btn {
+            background: #3d3d5c;
+            color: #e4e4e7;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.15s;
+        }
+
+        .zipper-header-row-selector .zipper-header-apply-btn:hover {
+            background: #4d4d6c;
+        }
+
+        .zipper-header-row-selector .zipper-header-hint {
+            color: #52525b;
+            font-size: 0.78rem;
+            font-style: italic;
+        }
+
+        .zipper-section-body > p {
+            color: #a1a1aa;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Correlation Analysis */
+        .zipper-analysis {
+            margin-top: 20px;
+            background: #1e1e2e;
+            border: 1px solid #2d2d44;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .zipper-analysis-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e4e4e7;
+        }
+
+        .zipper-analysis-subtitle {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #71717a;
+        }
+
+        .zipper-analysis-cards {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .zipper-analysis-card {
+            flex: 1;
+            min-width: 220px;
+            background: #252536;
+            border: 2px solid #3d3d5c;
+            border-radius: 10px;
+            padding: 16px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .zipper-analysis-card.winner {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.06);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+        }
+
+        .zipper-analysis-card.loser {
+            opacity: 0.6;
+        }
+
+        .zipper-analysis-card-label {
+            color: #a1a1aa;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zipper-analysis-card-label .card-color-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .zipper-analysis-card-col {
+            color: #e4e4e7;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            word-break: break-all;
+        }
+
+        .zipper-analysis-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .zipper-analysis-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .zipper-analysis-metric-name {
+            color: #71717a;
+            font-size: 0.8rem;
+        }
+
+        .zipper-analysis-metric-value {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .metric-good { color: #22c55e; }
+        .metric-ok { color: #f59e0b; }
+        .metric-poor { color: #ef4444; }
+
+        .zipper-corr-bar {
+            height: 6px;
+            background: #3d3d5c;
+            border-radius: 3px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .zipper-corr-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .zipper-analysis-verdict {
+            padding: 14px 18px;
+            background: #252536;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+            color: #e4e4e7;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .verdict-highlight {
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        .verdict-secondary {
+            color: #71717a;
+            font-size: 0.82rem;
+        }
+
+        .zipper-analysis-file-group {
+            margin-bottom: 20px;
+        }
+
+        .zipper-analysis-file-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .zipper-analysis-file-title {
+            color: #e4e4e7;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: #252536;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zipper-analysis-file-title .file-icon {
+            color: #8b5cf6;
+        }
+
+        .zipper-analysis-file-divider {
+            border: none;
+            border-top: 1px solid #2d2d44;
+            margin: 20px 0;
+        }
+
+        .zipper-analysis-summary {
+            margin-top: 20px;
+            padding: 16px 18px;
+            background: #252536;
+            border-radius: 8px;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .zipper-analysis-summary-title {
+            color: #e4e4e7;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .zipper-analysis-summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .zipper-analysis-summary-table th {
+            text-align: left;
+            color: #71717a;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-bottom: 1px solid #3d3d5c;
+        }
+
+        .zipper-analysis-summary-table td {
+            padding: 6px 10px;
+            color: #a1a1aa;
+            border-bottom: 1px solid #2d2d44;
+        }
+
+        .zipper-analysis-summary-table .winner-cell {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .zipper-analysis-summary-table .metric-good {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .zipper-analysis-summary-table .metric-ok {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .zipper-analysis-summary-table .metric-poor {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .r2-info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid #52525b;
+            color: #71717a;
+            font-size: 0.65rem;
+            font-weight: 700;
+            font-style: italic;
+            cursor: help;
+            margin-left: 6px;
+            position: relative;
+            vertical-align: middle;
+        }
+
+        .r2-info-icon:hover {
+            border-color: #a1a1aa;
+            color: #e4e4e7;
+        }
+
+        .r2-info-icon .r2-info-tooltip {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            border: 1px solid #3d3d5c;
+            border-radius: 8px;
+            padding: 10px 14px;
+            white-space: nowrap;
+            font-size: 0.78rem;
+            font-style: normal;
+            font-weight: 400;
+            color: #a1a1aa;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            line-height: 1.7;
+        }
+
+        .r2-info-icon:hover .r2-info-tooltip {
+            display: block;
+        }
+
+        .zipper-analysis-details-toggle {
+            padding: 10px 16px;
+            color: #8b5cf6;
+            font-size: 0.85rem;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.15s;
+            margin-top: 12px;
+        }
+
+        .zipper-analysis-details-toggle:hover {
+            color: #a78bfa;
+        }
+
+        .zipper-analysis-details-toggle #zipperDetailsToggleIcon {
+            display: inline-block;
+            transition: transform 0.2s;
+            font-size: 0.7rem;
+        }
+
+        .zipper-analysis-details-toggle.expanded #zipperDetailsToggleIcon {
+            transform: rotate(90deg);
+        }
+
+        .zipper-analysis-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #2d2d44;
+        }
+
+        @media (max-width: 768px) {
+            .zipper-upload-area {
+                flex-direction: column;
+            }
+            .zipper-upload-box {
+                max-width: 100%;
+            }
+            .zipper-well-card {
+                max-width: 100%;
+                min-width: 100%;
+            }
+        }
+
     </style>
     <!-- SheetJS library for Excel file processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1852,7 +2745,7 @@
     <div class="container">
         <div class="header">
             <h1>📂 Historical File Import Tool</h1>
-            <p>Compare CSV/XLSX headers and identify channels from PDF vs CSV data · v4</p>
+            <p>Compare CSV/XLSX headers and identify channels from PDF vs CSV data · v5</p>
         </div>
 
         <div class="content">
@@ -2076,6 +2969,143 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Swing Well Mapping Section -->
+            <div class="zipper-section">
+                <div class="zipper-section-header" id="zipperSectionHeader" onclick="toggleZipperSection()">
+                    <h3>
+                        <svg width="24" height="18" viewBox="0 0 24 18" style="vertical-align: middle; margin-right: 6px;">
+                            <rect width="24" height="18" rx="2" fill="#ffffff"/>
+                            <polyline points="2,14 6,4 10,14 14,4 18,14 22,4" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Swing Well Mapping
+                    </h3>
+                    <span class="zipper-section-toggle" id="zipperSectionToggle">▼</span>
+                </div>
+
+                <div class="zipper-section-body" id="zipperSectionBody" style="display: none;">
+                    <p>
+                        Wellhead Pressure vs Zipper Pressure
+                    </p>
+
+                    <!-- Upload Area -->
+                    <div class="zipper-upload-area">
+                        <div class="zipper-upload-box" id="zipperUploadBox" onclick="document.getElementById('zipperFileInput').click()">
+                            <input type="file" id="zipperFileInput" class="file-input" accept=".csv,.txt,.xlsx,.xls" multiple style="display:none;">
+                            <span style="font-size:1.1rem;">📈</span>
+                            <span style="color:#e4e4e7; font-size:0.85rem; font-weight:600;">Upload Historical Files</span>
+                            <span style="color:#52525b; font-size:0.75rem;">CSV / TXT / XLSX</span>
+                        </div>
+                    </div>
+
+                    <!-- Uploaded Files List -->
+                    <div class="zipper-file-list" id="zipperFileList" style="display: none;">
+                        <div class="zipper-file-list-header">
+                            <span class="zipper-file-list-title">Uploaded Files</span>
+                            <span class="zipper-file-count" id="zipperFileCount"></span>
+                            <button class="zipper-add-more-btn" onclick="document.getElementById('zipperFileInput').click()">＋ Add More</button>
+                        </div>
+                        <div class="zipper-well-files-area" id="zipperWellFiles">
+                            <!-- Well pills appear here -->
+                        </div>
+                    </div>
+
+                    <!-- Header Row Selector -->
+                    <div class="zipper-header-row-selector">
+                        <label for="zipperHeaderRow">Header Row:</label>
+                        <input type="number" id="zipperHeaderRow" min="1" value="1" 
+                               onchange="applyZipperHeaderRow()"
+                               onkeypress="if(event.key==='Enter') applyZipperHeaderRow()">
+                        <button class="zipper-header-apply-btn" onclick="applyZipperHeaderRow()">Apply</button>
+                        <span class="zipper-header-hint">Which row contains column names?</span>
+                    </div>
+
+                    <!-- Active File Selector -->
+                    <div class="zipper-active-file" id="zipperActiveFile" style="display: none;">
+                        <label class="zipper-active-file-label">Select file for column mapping:</label>
+                        <select class="zipper-active-file-select" id="zipperActiveFileSelect" onchange="onZipperActiveFileChange()">
+                        </select>
+                    </div>
+
+                    <!-- Column Selection Dropdowns -->
+                    <div class="zipper-column-selectors" id="zipperColumnSelectors" style="display: none;">
+                        <div class="zipper-combo-group">
+                            <label class="zipper-combo-label">Wellhead Pressure A <span class="zipper-required">*</span></label>
+                            <div class="zipper-combo" id="zipperCombo1">
+                                <input type="text" class="zipper-combo-input" id="zipperComboInput1"
+                                       placeholder="Search or select column..."
+                                       oninput="filterZipperCombo(1)" onfocus="openZipperCombo(1)" autocomplete="off">
+                                <span class="zipper-combo-arrow" onclick="toggleZipperCombo(1)">▾</span>
+                                <div class="zipper-combo-dropdown" id="zipperComboDropdown1"></div>
+                            </div>
+                        </div>
+                        <div class="zipper-combo-group">
+                            <label class="zipper-combo-label">Wellhead Pressure B <span class="zipper-required">*</span></label>
+                            <div class="zipper-combo" id="zipperCombo2">
+                                <input type="text" class="zipper-combo-input" id="zipperComboInput2"
+                                       placeholder="Search or select column..."
+                                       oninput="filterZipperCombo(2)" onfocus="openZipperCombo(2)" autocomplete="off">
+                                <span class="zipper-combo-arrow" onclick="toggleZipperCombo(2)">▾</span>
+                                <div class="zipper-combo-dropdown" id="zipperComboDropdown2"></div>
+                            </div>
+                        </div>
+                        <div class="zipper-combo-group">
+                            <label class="zipper-combo-label">Zipper Pressure <span class="zipper-required">*</span></label>
+                            <div class="zipper-combo" id="zipperCombo3">
+                                <input type="text" class="zipper-combo-input" id="zipperComboInput3"
+                                       placeholder="Search or select column..."
+                                       oninput="filterZipperCombo(3)" onfocus="openZipperCombo(3)" autocomplete="off">
+                                <span class="zipper-combo-arrow" onclick="toggleZipperCombo(3)">▾</span>
+                                <div class="zipper-combo-dropdown" id="zipperComboDropdown3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="zipper-config-bar" id="zipperConfigBar" style="display: none;">
+                        <button class="zipper-plot-btn" id="zipperPlotBtn" onclick="renderZipperChart()" disabled>
+                            📊 Plot Pressures
+                        </button>
+                        <button class="zipper-plot-btn" id="zipperCorrBtn" onclick="runZipperCorrelationOnly()" disabled style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+                            📐 Correlation Analysis
+                        </button>
+                        <button class="zipper-clear-btn" onclick="clearAllZipperWells()">✕ Clear All</button>
+                    </div>
+
+                    <!-- Chart Area -->
+                    <div class="zipper-main-layout">
+                        <div class="zipper-chart-wrapper">
+                            <div id="zipperChartScalePopup" class="chart-scale-popup">
+                                <button type="button" class="chart-scale-popup-close" onclick="closeZipperChartScalePopup()" title="Close">×</button>
+                                <div class="chart-axis-scale-toolbar comparison-chart-scale-toolbar">
+                                    <span class="chart-axis-scale-label">Y-axis scale:</span>
+                                    <label>Min <input type="number" id="zipperChartYMin" step="any" placeholder="auto" title="Minimum value for Y axis"></label>
+                                    <label>Max <input type="number" id="zipperChartYMax" step="any" placeholder="auto" title="Maximum value for Y axis"></label>
+                                    <button type="button" class="chart-scale-apply-btn" onclick="applyZipperChartAxisScale()">Apply</button>
+                                    <button type="button" class="chart-scale-reset-btn" onclick="resetZipperChartAxisScale()">Reset to auto</button>
+                                </div>
+                            </div>
+                            <div class="zipper-chart-legend" id="zipperChartLegend" style="display: none;"></div>
+                            <canvas id="zipperChart"></canvas>
+                            <div class="zipper-chart-placeholder" id="zipperChartPlaceholder">
+                                <div class="zipper-chart-placeholder-icon">⛽</div>
+                                <div>Add well data files and select pressure columns to visualize zipper patterns</div>
+                                <div style="font-size: 0.8rem; margin-top: 5px;">Each well's wellhead pressure will be overlaid on a single chart</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Correlation Analysis Results -->
+                    <div class="zipper-analysis" id="zipperAnalysis" style="display: none;">
+                        <div id="zipperAnalysisSummary"></div>
+                        <div class="zipper-analysis-details-toggle" id="zipperDetailsToggle" onclick="toggleZipperDetails()">
+                            <span id="zipperDetailsToggleIcon">▶</span> Show Detailed Breakdown Per File
+                        </div>
+                        <div class="zipper-analysis-details" id="zipperAnalysisDetails" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -3897,24 +4927,33 @@
             }
         }
 
-        function downloadConvertedCsv() {
-            if (!convertedCsvContent) {
+        function downloadConvertedCsv(explicitFilename, explicitContent) {
+            const content = explicitContent || convertedCsvContent;
+            if (!content) {
                 alert('No converted content available for download.');
                 return;
             }
             
-            // Generate filename based on original file
-            let filename = 'converted.csv';
-            if (currentFileName) {
-                if (currentFileType === 'txt') {
-                    filename = currentFileName.replace(/\.txt$/i, '_converted.csv');
-                } else if (currentFileType === 'xlsx') {
-                    filename = currentFileName.replace(/\.(xlsx|xls)$/i, '_converted.csv');
+            // Use explicit filename if provided, otherwise derive from source file
+            let filename = explicitFilename || 'converted.csv';
+            if (!explicitFilename) {
+                const sourceName = currentFileName;
+                if (sourceName) {
+                    const sourceType = currentFileType;
+                    if (sourceType === 'txt') {
+                        filename = sourceName.replace(/\.txt$/i, '_converted.csv');
+                    } else if (sourceType === 'xlsx') {
+                        filename = sourceName.replace(/\.(xlsx|xls)$/i, '_converted.csv');
+                    } else if (sourceType === 'csv') {
+                        filename = sourceName.replace(/\.csv$/i, '_converted.csv');
+                    } else {
+                        filename = sourceName.replace(/\.[^.]+$/, '_converted.csv');
+                    }
                 }
             }
             
             // Create a blob with the CSV content
-            const blob = new Blob([convertedCsvContent], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
             
             // Create download link
             const link = document.createElement('a');
@@ -3928,8 +4967,7 @@
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             } else {
-                // Fallback for older browsers
-                window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(convertedCsvContent));
+                window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(content));
             }
         }
 
@@ -4104,6 +5142,7 @@
             initializeChannelIdentifier();
             initializePanelResizer();
             initializeColumnResizer();
+            initializeZipperSection();
             
             window.addEventListener('resize', function() {
                 if (document.body.classList.contains('channel-section-expanded') && comparisonChartInstance) {
@@ -4111,6 +5150,1099 @@
                 }
             });
         });
+
+        /* ============================================
+           ZIPPER SWING WELLS SECTION
+           ============================================ */
+        const zipperWellColors = [
+            '#8b5cf6', '#38bdf8', '#f59e0b', '#ef4444', '#3b82f6',
+            '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#14b8a6'
+        ];
+        let zipperWells = [];
+        let zipperChartInstance = null;
+        let zipperHeaderRow = 1;
+        let zipperActiveWellId = null;
+        let zipperLastFileResults = null;
+        let zipperLastCols = {};
+        let zipperLockedCols = { 1: null, 2: null, 3: null };
+        let zipperLastAction = null; // 'plot', 'correlation', or 'both'
+
+        function toggleZipperSection() {
+            const header = document.getElementById('zipperSectionHeader');
+            const body = document.getElementById('zipperSectionBody');
+            const toggle = document.getElementById('zipperSectionToggle');
+
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                header.classList.add('expanded');
+                document.body.classList.add('zipper-section-expanded');
+                setTimeout(() => {
+                    if (zipperChartInstance) zipperChartInstance.resize();
+                }, 100);
+            } else {
+                body.style.display = 'none';
+                header.classList.remove('expanded');
+                document.body.classList.remove('zipper-section-expanded');
+            }
+        }
+
+        function initializeZipperSection() {
+            const fileInput = document.getElementById('zipperFileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleZipperFileUpload);
+            }
+            const uploadBox = document.getElementById('zipperUploadBox');
+            if (uploadBox) {
+                uploadBox.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadBox.classList.add('dragover');
+                });
+                uploadBox.addEventListener('dragleave', () => {
+                    uploadBox.classList.remove('dragover');
+                });
+                uploadBox.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadBox.classList.remove('dragover');
+                    if (e.dataTransfer.files.length > 0) {
+                        processZipperFiles(e.dataTransfer.files);
+                    }
+                });
+            }
+        }
+
+        function handleZipperFileUpload(e) {
+            if (e.target.files.length > 0) {
+                processZipperFiles(e.target.files);
+                e.target.value = '';
+            }
+        }
+
+        function processZipperFiles(files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                const fileName = file.name;
+                const ext = fileName.split('.').pop().toLowerCase();
+
+                if (ext === 'xlsx' || ext === 'xls') {
+                    reader.onload = function(e) {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const csvText = XLSX.utils.sheet_to_csv(firstSheet);
+                            addZipperWell(fileName, csvText);
+                        } catch (err) {
+                            alert('Error reading ' + fileName + ': ' + err.message);
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    reader.onload = function(e) {
+                        addZipperWell(fileName, e.target.result);
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        }
+
+        function parseZipperCsv(rawText) {
+            const lines = rawText.split(/\r?\n/);
+            if (lines.length < 1) return { headers: [], rows: [] };
+
+            const headerIdx = Math.max(0, zipperHeaderRow - 1);
+            if (headerIdx >= lines.length || !lines[headerIdx].trim()) return { headers: [], rows: [] };
+
+            const headerLine = lines[headerIdx];
+            let delimiter = ',';
+            const tabs = (headerLine.match(/\t/g) || []).length;
+            const commas = (headerLine.match(/,/g) || []).length;
+            if (tabs > commas) delimiter = '\t';
+
+            const headers = headerLine.split(delimiter).map(h => h.trim().replace(/^["']|["']$/g, ''));
+            const colCount = headers.length;
+            const rows = [];
+            for (let i = headerIdx + 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const vals = lines[i].split(delimiter).map(v => v.trim().replace(/^["']|["']$/g, ''));
+                while (vals.length < colCount) vals.push('');
+                if (vals.length > colCount) vals.length = colCount;
+                rows.push(vals);
+            }
+            return { headers, rows };
+        }
+
+        function addZipperWell(fileName, rawText) {
+            const colorIdx = zipperWells.length % zipperWellColors.length;
+            const color = zipperWellColors[colorIdx];
+            const parsed = parseZipperCsv(rawText);
+            const wellName = fileName.replace(/\.[^/.]+$/, '');
+
+            const well = {
+                id: Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                fileName,
+                wellName,
+                rawText,
+                headers: parsed.headers,
+                rows: parsed.rows,
+                color
+            };
+
+            zipperWells.push(well);
+            updateZipperUploadState();
+            renderZipperWellPills();
+            updateZipperFileSelector();
+            showZipperConfigBar();
+            updateZipperPlotButton();
+        }
+
+        function updateZipperUploadState() {
+            const uploadBox = document.getElementById('zipperUploadBox');
+            const fileList = document.getElementById('zipperFileList');
+            const fileCount = document.getElementById('zipperFileCount');
+            if (zipperWells.length > 0) {
+                uploadBox.classList.add('has-files');
+                fileList.style.display = 'block';
+                fileCount.textContent = zipperWells.length + ' file' + (zipperWells.length !== 1 ? 's' : '');
+            } else {
+                uploadBox.classList.remove('has-files');
+                fileList.style.display = 'none';
+            }
+        }
+
+        function renderZipperWellPills() {
+            const container = document.getElementById('zipperWellFiles');
+            container.innerHTML = '';
+            zipperWells.forEach(well => {
+                const pill = document.createElement('div');
+                pill.className = 'zipper-well-pill';
+                pill.innerHTML = `
+                    <span class="well-color-dot" style="background: ${well.color}"></span>
+                    <span class="well-name" title="${well.fileName}">${well.wellName}</span>
+                    <span class="well-remove" onclick="removeZipperWell('${well.id}')" title="Remove well">×</span>
+                `;
+                container.appendChild(pill);
+            });
+        }
+
+        function getActiveZipperWell() {
+            return zipperWells.find(w => w.id === zipperActiveWellId) || null;
+        }
+
+        function getActiveZipperHeaders() {
+            const well = getActiveZipperWell();
+            return well ? well.headers : [];
+        }
+
+        // Store the master options list for each combo
+        let zipperComboAllHeaders = [];
+
+        function updateZipperFileSelector() {
+            const container = document.getElementById('zipperActiveFile');
+            const select = document.getElementById('zipperActiveFileSelect');
+            const selectors = document.getElementById('zipperColumnSelectors');
+
+            if (zipperWells.length === 0) {
+                container.style.display = 'none';
+                selectors.style.display = 'none';
+                zipperActiveWellId = null;
+                return;
+            }
+
+            // Auto-select if only 1 file or current selection was removed
+            if (zipperWells.length === 1) {
+                zipperActiveWellId = zipperWells[0].id;
+            } else if (!zipperWells.find(w => w.id === zipperActiveWellId)) {
+                zipperActiveWellId = zipperWells[0].id;
+            }
+
+            // Show file selector only when multiple files
+            if (zipperWells.length > 1) {
+                container.style.display = 'flex';
+            } else {
+                container.style.display = 'none';
+            }
+
+            // Rebuild options
+            select.innerHTML = '';
+            zipperWells.forEach(well => {
+                const opt = document.createElement('option');
+                opt.value = well.id;
+                opt.textContent = well.fileName;
+                if (well.id === zipperActiveWellId) opt.selected = true;
+                select.appendChild(opt);
+            });
+
+            populateZipperCombos();
+        }
+
+        function lockZipperCols(whpA, whpB, zip) {
+            zipperLockedCols = { 1: whpA, 2: whpB, 3: zip };
+            updateZipperLockIndicators();
+        }
+
+        function unlockZipperCols() {
+            zipperLockedCols = { 1: null, 2: null, 3: null };
+            updateZipperLockIndicators();
+        }
+
+        function updateZipperLockIndicators() {
+            for (let i = 1; i <= 3; i++) {
+                const group = document.getElementById('zipperCombo' + i)?.closest('.zipper-combo-group');
+                if (!group) continue;
+                const label = group.querySelector('.zipper-combo-label');
+                if (!label) continue;
+                let lockIcon = label.querySelector('.zipper-lock-icon');
+                if (zipperLockedCols[i]) {
+                    if (!lockIcon) {
+                        lockIcon = document.createElement('span');
+                        lockIcon.className = 'zipper-lock-icon';
+                        lockIcon.title = 'Locked — column will persist when switching files. Change the selection to unlock.';
+                        lockIcon.textContent = ' 🔒';
+                        label.appendChild(lockIcon);
+                    }
+                } else if (lockIcon) {
+                    lockIcon.remove();
+                }
+            }
+        }
+
+        function onZipperActiveFileChange() {
+            const select = document.getElementById('zipperActiveFileSelect');
+            zipperActiveWellId = select.value;
+            const newHeaders = getActiveZipperHeaders();
+
+            let allLockedValid = true;
+            for (let i = 1; i <= 3; i++) {
+                const input = document.getElementById('zipperComboInput' + i);
+                if (!input) continue;
+                if (zipperLockedCols[i] && newHeaders.includes(zipperLockedCols[i])) {
+                    input.value = zipperLockedCols[i];
+                    input.classList.add('has-value');
+                } else {
+                    input.value = '';
+                    input.classList.remove('has-value');
+                    allLockedValid = false;
+                }
+            }
+            populateZipperCombos();
+            updateZipperPlotButton();
+
+            if (allLockedValid && zipperLastAction) {
+                if (zipperLastAction === 'plot' || zipperLastAction === 'both') {
+                    renderZipperChart();
+                }
+                if (zipperLastAction === 'correlation' || zipperLastAction === 'both') {
+                    runZipperCorrelationOnly();
+                }
+            }
+        }
+
+        function populateZipperCombos() {
+            zipperComboAllHeaders = getActiveZipperHeaders();
+            const selectors = document.getElementById('zipperColumnSelectors');
+            if (zipperComboAllHeaders.length > 0) {
+                selectors.style.display = 'flex';
+            } else {
+                selectors.style.display = 'none';
+            }
+            for (let i = 1; i <= 3; i++) {
+                const input = document.getElementById('zipperComboInput' + i);
+                const currentVal = input ? input.value : '';
+                buildZipperComboOptions(i, currentVal);
+                // If current value is no longer valid, clear it
+                if (currentVal && !zipperComboAllHeaders.includes(currentVal)) {
+                    input.value = '';
+                    input.classList.remove('has-value');
+                }
+            }
+        }
+
+        function buildZipperComboOptions(comboIdx, filter) {
+            const dropdown = document.getElementById('zipperComboDropdown' + comboIdx);
+            dropdown.innerHTML = '';
+            const lowerFilter = filter.toLowerCase();
+            const matched = zipperComboAllHeaders.filter(h => h.toLowerCase().includes(lowerFilter));
+
+            if (matched.length === 0) {
+                dropdown.innerHTML = '<div class="zipper-combo-no-results">No matching columns</div>';
+                return;
+            }
+
+            matched.forEach(header => {
+                const opt = document.createElement('div');
+                opt.className = 'zipper-combo-option';
+
+                if (lowerFilter && header.toLowerCase().includes(lowerFilter)) {
+                    const idx = header.toLowerCase().indexOf(lowerFilter);
+                    const before = header.substring(0, idx);
+                    const match = header.substring(idx, idx + lowerFilter.length);
+                    const after = header.substring(idx + lowerFilter.length);
+                    opt.innerHTML = before + '<span class="combo-match">' + match + '</span>' + after;
+                } else {
+                    opt.textContent = header;
+                }
+
+                opt.addEventListener('click', () => {
+                    selectZipperComboValue(comboIdx, header);
+                });
+                dropdown.appendChild(opt);
+            });
+        }
+
+        function selectZipperComboValue(comboIdx, value) {
+            const input = document.getElementById('zipperComboInput' + comboIdx);
+            input.value = value;
+            input.classList.add('has-value');
+            closeZipperCombo(comboIdx);
+            if (zipperLockedCols[comboIdx] !== null) {
+                zipperLockedCols[comboIdx] = value;
+                updateZipperLockIndicators();
+            }
+            updateZipperPlotButton();
+        }
+
+        function filterZipperCombo(comboIdx) {
+            const input = document.getElementById('zipperComboInput' + comboIdx);
+            const val = input.value;
+            // If the user clears or modifies, remove the confirmed style
+            if (zipperComboAllHeaders.includes(val)) {
+                input.classList.add('has-value');
+            } else {
+                input.classList.remove('has-value');
+            }
+            buildZipperComboOptions(comboIdx, val);
+            openZipperCombo(comboIdx);
+            updateZipperPlotButton();
+        }
+
+        function openZipperCombo(comboIdx) {
+            // Close other combos first
+            for (let i = 1; i <= 3; i++) {
+                if (i !== comboIdx) closeZipperCombo(i);
+            }
+            const dropdown = document.getElementById('zipperComboDropdown' + comboIdx);
+            const input = document.getElementById('zipperComboInput' + comboIdx);
+            buildZipperComboOptions(comboIdx, input.value);
+            dropdown.classList.add('open');
+        }
+
+        function closeZipperCombo(comboIdx) {
+            const dropdown = document.getElementById('zipperComboDropdown' + comboIdx);
+            dropdown.classList.remove('open');
+        }
+
+        function toggleZipperCombo(comboIdx) {
+            const dropdown = document.getElementById('zipperComboDropdown' + comboIdx);
+            if (dropdown.classList.contains('open')) {
+                closeZipperCombo(comboIdx);
+            } else {
+                openZipperCombo(comboIdx);
+            }
+        }
+
+        function getZipperComboValue(comboIdx) {
+            const input = document.getElementById('zipperComboInput' + comboIdx);
+            return input ? input.value.trim() : '';
+        }
+
+        // Close combos when clicking outside
+        document.addEventListener('click', function(e) {
+            for (let i = 1; i <= 3; i++) {
+                const combo = document.getElementById('zipperCombo' + i);
+                if (combo && !combo.contains(e.target)) {
+                    closeZipperCombo(i);
+                }
+            }
+        });
+
+        function removeZipperWell(wellId) {
+            zipperWells = zipperWells.filter(w => w.id !== wellId);
+            zipperWells.forEach((w, i) => {
+                w.color = zipperWellColors[i % zipperWellColors.length];
+            });
+            updateZipperUploadState();
+            renderZipperWellPills();
+            updateZipperFileSelector();
+            updateZipperPlotButton();
+            if (zipperWells.length === 0) {
+                hideZipperConfigBar();
+                destroyZipperChart();
+            }
+        }
+
+        function clearAllZipperWells() {
+            zipperWells = [];
+            zipperActiveWellId = null;
+            unlockZipperCols();
+            zipperLastAction = null;
+            updateZipperUploadState();
+            renderZipperWellPills();
+            for (let i = 1; i <= 3; i++) {
+                const input = document.getElementById('zipperComboInput' + i);
+                if (input) { input.value = ''; input.classList.remove('has-value'); }
+            }
+            updateZipperFileSelector();
+            hideZipperConfigBar();
+            destroyZipperChart();
+        }
+
+        function showZipperConfigBar() {
+            document.getElementById('zipperConfigBar').style.display = 'flex';
+        }
+
+        function hideZipperConfigBar() {
+            document.getElementById('zipperConfigBar').style.display = 'none';
+        }
+
+        function updateZipperPlotButton() {
+            const btn = document.getElementById('zipperPlotBtn');
+            const corrBtn = document.getElementById('zipperCorrBtn');
+            const v1 = getZipperComboValue(1);
+            const v2 = getZipperComboValue(2);
+            const v3 = getZipperComboValue(3);
+            const allSelected = v1 && v2 && v3 &&
+                                zipperComboAllHeaders.includes(v1) &&
+                                zipperComboAllHeaders.includes(v2) &&
+                                zipperComboAllHeaders.includes(v3);
+            const ready = allSelected && zipperWells.length > 0;
+            btn.disabled = !ready;
+            if (corrBtn) corrBtn.disabled = !ready;
+        }
+
+        function applyZipperHeaderRow() {
+            const input = document.getElementById('zipperHeaderRow');
+            zipperHeaderRow = Math.max(1, parseInt(input.value) || 1);
+            zipperWells.forEach(well => {
+                const parsed = parseZipperCsv(well.rawText);
+                well.headers = parsed.headers;
+                well.rows = parsed.rows;
+            });
+            unlockZipperCols();
+            zipperLastAction = null;
+            for (let i = 1; i <= 3; i++) {
+                const inp = document.getElementById('zipperComboInput' + i);
+                if (inp) { inp.value = ''; inp.classList.remove('has-value'); }
+            }
+            updateZipperFileSelector();
+            updateZipperPlotButton();
+        }
+
+        function renderZipperChart() {
+            const whpACol = getZipperComboValue(1);
+            const whpBCol = getZipperComboValue(2);
+            const zipCol = getZipperComboValue(3);
+            const well = getActiveZipperWell();
+            if (!whpACol || !whpBCol || !zipCol || !well) return;
+
+            lockZipperCols(whpACol, whpBCol, zipCol);
+            if (zipperLastAction === 'correlation') {
+                zipperLastAction = 'both';
+            } else {
+                zipperLastAction = 'plot';
+            }
+
+            const placeholder = document.getElementById('zipperChartPlaceholder');
+            const legendContainer = document.getElementById('zipperChartLegend');
+            placeholder.style.display = 'none';
+            legendContainer.style.display = 'flex';
+
+            if (zipperChartInstance) {
+                zipperChartInstance.destroy();
+                zipperChartInstance = null;
+            }
+
+            const datasets = [];
+            let maxLen = 0;
+            let colorIndex = 0;
+
+            {
+                const whpAIdx = well.headers.indexOf(whpACol);
+                const whpBIdx = well.headers.indexOf(whpBCol);
+                const zipIdx = well.headers.indexOf(zipCol);
+
+                if (whpAIdx !== -1) {
+                    const c = zipperWellColors[colorIndex++ % zipperWellColors.length];
+                    const values = well.rows.map(row => {
+                        const v = parseFloat(row[whpAIdx]);
+                        return isNaN(v) ? null : v;
+                    });
+                    if (values.length > maxLen) maxLen = values.length;
+                    datasets.push({
+                        label: whpACol,
+                        data: values,
+                        borderColor: c,
+                        backgroundColor: c + '20',
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        fill: false
+                    });
+                }
+
+                if (whpBIdx !== -1) {
+                    const c = zipperWellColors[colorIndex++ % zipperWellColors.length];
+                    const values = well.rows.map(row => {
+                        const v = parseFloat(row[whpBIdx]);
+                        return isNaN(v) ? null : v;
+                    });
+                    if (values.length > maxLen) maxLen = values.length;
+                    datasets.push({
+                        label: whpBCol,
+                        data: values,
+                        borderColor: c,
+                        backgroundColor: c + '15',
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        fill: false
+                    });
+                }
+
+                if (zipIdx !== -1) {
+                    const c = zipperWellColors[colorIndex++ % zipperWellColors.length];
+                    const values = well.rows.map(row => {
+                        const v = parseFloat(row[zipIdx]);
+                        return isNaN(v) ? null : v;
+                    });
+                    if (values.length > maxLen) maxLen = values.length;
+                    datasets.push({
+                        label: zipCol,
+                        data: values,
+                        borderColor: c,
+                        backgroundColor: c + '10',
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        fill: false
+                    });
+                }
+            }
+
+            const labels = Array.from({ length: maxLen }, (_, i) => i + 1);
+
+            legendContainer.innerHTML = '';
+            datasets.forEach((ds, i) => {
+                const item = document.createElement('div');
+                item.className = 'zipper-legend-item';
+                const dashStyle = ds.borderDash
+                    ? 'background: repeating-linear-gradient(90deg, ' + ds.borderColor + ' 0px, ' + ds.borderColor + ' ' + ds.borderDash[0] + 'px, transparent ' + ds.borderDash[0] + 'px, transparent ' + (ds.borderDash[0] + ds.borderDash[1]) + 'px)'
+                    : '';
+                item.innerHTML = `<span class="zipper-legend-color" style="background: ${ds.borderColor}; ${dashStyle}"></span>${ds.label}`;
+                item.onclick = () => {
+                    const meta = zipperChartInstance.getDatasetMeta(i);
+                    meta.hidden = !meta.hidden;
+                    item.classList.toggle('hidden', meta.hidden);
+                    zipperChartInstance.update();
+                };
+                legendContainer.appendChild(item);
+            });
+
+            const ctx = document.getElementById('zipperChart').getContext('2d');
+            zipperChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 400 },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: (items) => 'Row ' + items[0].label
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Row Index',
+                                color: '#a1a1aa'
+                            },
+                            ticks: {
+                                color: '#71717a',
+                                maxTicksLimit: 30,
+                                maxRotation: 45
+                            },
+                            grid: { color: '#2d2d44' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Pressure',
+                                color: '#a1a1aa'
+                            },
+                            ticks: { color: '#71717a' },
+                            grid: { color: '#2d2d44' }
+                        }
+                    }
+                }
+            });
+
+            // Run correlation analysis
+            runZipperCorrelationAll(whpACol, whpBCol, zipCol);
+
+            // Clear axis scale inputs
+            document.getElementById('zipperChartYMin').value = '';
+            document.getElementById('zipperChartYMax').value = '';
+
+            // Y-axis click to open scale popup
+            const zipCanvas = document.getElementById('zipperChart');
+            function handleZipperChartCanvasClick(e) {
+                if (!zipperChartInstance) return;
+                const yScale = zipperChartInstance.scales.y;
+                if (!yScale) return;
+                const rect = zipCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                if (x >= yScale.left - 8 && x <= yScale.right + 8) {
+                    const popup = document.getElementById('zipperChartScalePopup');
+                    if (popup) {
+                        popup.classList.add('show');
+                        document.getElementById('zipperChartYMin').focus();
+                        setTimeout(function() {
+                            document.addEventListener('click', closeZipperChartScalePopupOnClickOutside);
+                        }, 0);
+                    }
+                }
+            }
+            function handleZipperChartCanvasMouseMove(e) {
+                if (!zipperChartInstance) return;
+                const yScale = zipperChartInstance.scales.y;
+                if (!yScale) return;
+                const rect = zipCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                zipCanvas.style.cursor = (x >= yScale.left - 8 && x <= yScale.right + 8) ? 'pointer' : 'default';
+            }
+            zipCanvas.removeEventListener('click', handleZipperChartCanvasClick);
+            zipCanvas.removeEventListener('mousemove', handleZipperChartCanvasMouseMove);
+            zipCanvas.addEventListener('click', handleZipperChartCanvasClick);
+            zipCanvas.addEventListener('mousemove', handleZipperChartCanvasMouseMove);
+
+            const zipMinInput = document.getElementById('zipperChartYMin');
+            const zipMaxInput = document.getElementById('zipperChartYMax');
+            if (zipMinInput) zipMinInput.onkeydown = function(e) { if (e.key === 'Enter') applyZipperChartAxisScale(); };
+            if (zipMaxInput) zipMaxInput.onkeydown = function(e) { if (e.key === 'Enter') applyZipperChartAxisScale(); };
+        }
+
+        function applyZipperChartAxisScale() {
+            if (!zipperChartInstance) return;
+            const minInput = document.getElementById('zipperChartYMin');
+            const maxInput = document.getElementById('zipperChartYMax');
+            const minVal = minInput ? minInput.value.trim() : '';
+            const maxVal = maxInput ? maxInput.value.trim() : '';
+            const scale = zipperChartInstance.options.scales.y;
+            scale.min = minVal === '' ? undefined : parseFloat(minVal);
+            scale.max = maxVal === '' ? undefined : parseFloat(maxVal);
+            if (minVal !== '' && isNaN(scale.min)) return;
+            if (maxVal !== '' && isNaN(scale.max)) return;
+            zipperChartInstance.update();
+        }
+
+        function resetZipperChartAxisScale() {
+            if (!zipperChartInstance) return;
+            const minInput = document.getElementById('zipperChartYMin');
+            const maxInput = document.getElementById('zipperChartYMax');
+            if (minInput) minInput.value = '';
+            if (maxInput) maxInput.value = '';
+            zipperChartInstance.options.scales.y.min = undefined;
+            zipperChartInstance.options.scales.y.max = undefined;
+            zipperChartInstance.update();
+        }
+
+        function closeZipperChartScalePopup() {
+            const popup = document.getElementById('zipperChartScalePopup');
+            if (popup) popup.classList.remove('show');
+            document.removeEventListener('click', closeZipperChartScalePopupOnClickOutside);
+        }
+
+        function closeZipperChartScalePopupOnClickOutside(e) {
+            const popup = document.getElementById('zipperChartScalePopup');
+            if (popup && popup.classList.contains('show') && !popup.contains(e.target)) {
+                popup.classList.remove('show');
+                document.removeEventListener('click', closeZipperChartScalePopupOnClickOutside);
+            }
+        }
+
+        function destroyZipperChart() {
+            if (zipperChartInstance) {
+                zipperChartInstance.destroy();
+                zipperChartInstance = null;
+            }
+            const placeholder = document.getElementById('zipperChartPlaceholder');
+            const legend = document.getElementById('zipperChartLegend');
+            const analysis = document.getElementById('zipperAnalysis');
+            if (placeholder) placeholder.style.display = 'flex';
+            if (legend) legend.style.display = 'none';
+            if (analysis) analysis.style.display = 'none';
+        }
+
+        /* ============================================
+           CORRELATION ANALYSIS
+           ============================================ */
+
+        function pearsonCorrelation(x, y) {
+            const n = Math.min(x.length, y.length);
+            if (n < 2) return { r: 0, r2: 0, n: 0 };
+
+            const pairs = [];
+            for (let i = 0; i < n; i++) {
+                if (x[i] !== null && y[i] !== null && !isNaN(x[i]) && !isNaN(y[i])) {
+                    pairs.push([x[i], y[i]]);
+                }
+            }
+            if (pairs.length < 2) return { r: 0, r2: 0, n: 0 };
+
+            const pn = pairs.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+            for (const [xi, yi] of pairs) {
+                sumX += xi;
+                sumY += yi;
+                sumXY += xi * yi;
+                sumX2 += xi * xi;
+                sumY2 += yi * yi;
+            }
+
+            const num = pn * sumXY - sumX * sumY;
+            const den = Math.sqrt((pn * sumX2 - sumX * sumX) * (pn * sumY2 - sumY * sumY));
+            const r = den === 0 ? 0 : num / den;
+            return { r, r2: r * r, n: pn };
+        }
+
+        function meanAbsoluteError(x, y) {
+            let sum = 0, count = 0;
+            const n = Math.min(x.length, y.length);
+            for (let i = 0; i < n; i++) {
+                if (x[i] !== null && y[i] !== null && !isNaN(x[i]) && !isNaN(y[i])) {
+                    sum += Math.abs(x[i] - y[i]);
+                    count++;
+                }
+            }
+            return count === 0 ? Infinity : sum / count;
+        }
+
+        function rootMeanSquareError(x, y) {
+            let sum = 0, count = 0;
+            const n = Math.min(x.length, y.length);
+            for (let i = 0; i < n; i++) {
+                if (x[i] !== null && y[i] !== null && !isNaN(x[i]) && !isNaN(y[i])) {
+                    const d = x[i] - y[i];
+                    sum += d * d;
+                    count++;
+                }
+            }
+            return count === 0 ? Infinity : Math.sqrt(sum / count);
+        }
+
+        function extractColumnValues(well, colName) {
+            const idx = well.headers.indexOf(colName);
+            if (idx === -1) return [];
+            return well.rows.map(row => {
+                const v = parseFloat(row[idx]);
+                return isNaN(v) ? null : v;
+            });
+        }
+
+        function runZipperCorrelationOnly() {
+            const whpACol = getZipperComboValue(1);
+            const whpBCol = getZipperComboValue(2);
+            const zipCol = getZipperComboValue(3);
+            if (!whpACol || !whpBCol || !zipCol || zipperWells.length === 0) return;
+
+            lockZipperCols(whpACol, whpBCol, zipCol);
+            if (zipperLastAction === 'plot') {
+                zipperLastAction = 'both';
+            } else {
+                zipperLastAction = 'correlation';
+            }
+            runZipperCorrelationAll(whpACol, whpBCol, zipCol);
+        }
+
+        function metricClass(r2) {
+            if (r2 >= 0.8) return 'metric-good';
+            if (r2 >= 0.5) return 'metric-ok';
+            return 'metric-poor';
+        }
+
+        function formatMetric(v) {
+            if (v === Infinity) return '—';
+            return v.toFixed(2);
+        }
+
+        function buildAnalysisCard(label, colName, color, corr, mae, rmse, isWinner, isLoser) {
+            const cls = isWinner ? 'winner' : (isLoser ? 'loser' : '');
+            const badge = isWinner ? '<span style="color:#22c55e; font-size:0.75rem; margin-left:8px;">✓ BEST MATCH</span>' : '';
+            const r2Pct = (corr.r2 * 100).toFixed(1);
+            const barColor = corr.r2 >= 0.8 ? '#22c55e' : (corr.r2 >= 0.5 ? '#f59e0b' : '#ef4444');
+
+            return `
+                <div class="zipper-analysis-card ${cls}">
+                    <div class="zipper-analysis-card-label">
+                        <span class="card-color-dot" style="background:${color}"></span>
+                        ${label}${badge}
+                    </div>
+                    <div class="zipper-analysis-card-col">${colName}</div>
+                    <div class="zipper-analysis-metrics">
+                        <div class="zipper-analysis-metric">
+                            <span class="zipper-analysis-metric-name">Pearson r</span>
+                            <span class="zipper-analysis-metric-value ${metricClass(corr.r2)}">${corr.r.toFixed(4)}</span>
+                        </div>
+                        <div class="zipper-analysis-metric">
+                            <span class="zipper-analysis-metric-name">R² (fit)</span>
+                            <span class="zipper-analysis-metric-value ${metricClass(corr.r2)}">${r2Pct}%</span>
+                        </div>
+                        <div class="zipper-corr-bar">
+                            <div class="zipper-corr-bar-fill" style="width:${r2Pct}%; background:${barColor};"></div>
+                        </div>
+                        <div class="zipper-analysis-metric">
+                            <span class="zipper-analysis-metric-name">MAE</span>
+                            <span class="zipper-analysis-metric-value" style="color:#a1a1aa;">${formatMetric(mae)}</span>
+                        </div>
+                        <div class="zipper-analysis-metric">
+                            <span class="zipper-analysis-metric-name">RMSE</span>
+                            <span class="zipper-analysis-metric-value" style="color:#a1a1aa;">${formatMetric(rmse)}</span>
+                        </div>
+                        <div class="zipper-analysis-metric">
+                            <span class="zipper-analysis-metric-name">Data points</span>
+                            <span class="zipper-analysis-metric-value" style="color:#a1a1aa;">${corr.n.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function buildFileVerdict(fileName, whpACol, whpBCol, corrA, corrB) {
+            const aWins = corrA.r2 > corrB.r2;
+            const tie = Math.abs(corrA.r2 - corrB.r2) < 0.01;
+
+            if (tie) {
+                return `Both wellhead pressures show <span class="verdict-highlight">nearly identical</span> correlation (R² ${(corrA.r2 * 100).toFixed(1)}% vs ${(corrB.r2 * 100).toFixed(1)}%).`;
+            }
+            const winnerLabel = aWins ? 'Wellhead Pressure A' : 'Wellhead Pressure B';
+            const winnerCol = aWins ? whpACol : whpBCol;
+            const winnerR2 = aWins ? corrA.r2 : corrB.r2;
+            let strength = 'weak';
+            if (winnerR2 >= 0.9) strength = 'very strong';
+            else if (winnerR2 >= 0.7) strength = 'strong';
+            else if (winnerR2 >= 0.5) strength = 'moderate';
+
+            return `<span class="verdict-highlight">${winnerLabel}</span> (<strong>${winnerCol}</strong>) is the best match — <span class="verdict-highlight">${strength}</span> correlation, R² = ${(winnerR2 * 100).toFixed(1)}%.`;
+        }
+
+        function runZipperCorrelationAll(whpACol, whpBCol, zipCol) {
+            const analysisEl = document.getElementById('zipperAnalysis');
+            const summaryEl = document.getElementById('zipperAnalysisSummary');
+            const detailsEl = document.getElementById('zipperAnalysisDetails');
+            const toggleEl = document.getElementById('zipperDetailsToggle');
+
+            const fileResults = [];
+
+            zipperWells.forEach(well => {
+                const hasWhpA = well.headers.includes(whpACol);
+                const hasWhpB = well.headers.includes(whpBCol);
+                const hasZip = well.headers.includes(zipCol);
+                if (!hasZip || (!hasWhpA && !hasWhpB)) return;
+
+                const zipVals = extractColumnValues(well, zipCol);
+                const whpAVals = hasWhpA ? extractColumnValues(well, whpACol) : [];
+                const whpBVals = hasWhpB ? extractColumnValues(well, whpBCol) : [];
+                if (zipVals.length === 0) return;
+
+                const corrA = hasWhpA ? pearsonCorrelation(whpAVals, zipVals) : { r: 0, r2: 0, n: 0 };
+                const corrB = hasWhpB ? pearsonCorrelation(whpBVals, zipVals) : { r: 0, r2: 0, n: 0 };
+                const maeA = hasWhpA ? meanAbsoluteError(whpAVals, zipVals) : Infinity;
+                const maeB = hasWhpB ? meanAbsoluteError(whpBVals, zipVals) : Infinity;
+                const rmseA = hasWhpA ? rootMeanSquareError(whpAVals, zipVals) : Infinity;
+                const rmseB = hasWhpB ? rootMeanSquareError(whpBVals, zipVals) : Infinity;
+
+                fileResults.push({
+                    well, corrA, corrB, maeA, maeB, rmseA, rmseB, hasWhpA, hasWhpB
+                });
+            });
+
+            if (fileResults.length === 0) {
+                analysisEl.style.display = 'none';
+                zipperLastFileResults = null;
+                return;
+            }
+
+            zipperLastFileResults = fileResults;
+            zipperLastCols = { whpACol, whpBCol, zipCol };
+
+            // Build summary (always visible)
+            let summaryHTML = '';
+            let aWinCount = 0, bWinCount = 0, tieCount = 0;
+            fileResults.forEach(fr => {
+                const tie = Math.abs(fr.corrA.r2 - fr.corrB.r2) < 0.01;
+                if (tie) tieCount++;
+                else if (fr.corrA.r2 > fr.corrB.r2) aWinCount++;
+                else bWinCount++;
+            });
+
+            const overallWinner = aWinCount > bWinCount ? 'Wellhead Pressure A' : (bWinCount > aWinCount ? 'Wellhead Pressure B' : 'Tied');
+
+            // Group by best match: WHP A first, then WHP B, then ties
+            fileResults.sort((a, b) => {
+                const tieA = Math.abs(a.corrA.r2 - a.corrB.r2) < 0.01;
+                const tieB = Math.abs(b.corrA.r2 - b.corrB.r2) < 0.01;
+                const groupA = tieA ? 2 : (a.corrA.r2 > a.corrB.r2 ? 0 : 1);
+                const groupB = tieB ? 2 : (b.corrA.r2 > b.corrB.r2 ? 0 : 1);
+                return groupA - groupB;
+            });
+
+            summaryHTML += `
+                <div class="zipper-analysis-header">
+                    <span>📐 Correlation Analysis <span class="r2-info-icon">i<span class="r2-info-tooltip" style="text-align:left;white-space:normal;width:280px;"><strong style="color:#e4e4e7;">Methods Used</strong><br><br><span style="color:#e4e4e7;">Pearson r</span> — Linear correlation coefficient (-1 to +1)<br><br><span style="color:#e4e4e7;">R² (fit)</span> — Pearson r², proportion of variance explained (0–100%)<br><br><span style="color:#e4e4e7;">MAE</span> — Mean Absolute Error, average magnitude of differences<br><br><span style="color:#e4e4e7;">RMSE</span> — Root Mean Square Error, penalizes larger deviations</span></span></span>
+                    <span class="zipper-analysis-subtitle">Which wellhead pressure matches the zipper pressure?</span>
+                </div>
+                <div class="zipper-analysis-summary">
+                    <div class="zipper-analysis-summary-title" style="display:flex; align-items:center; justify-content:space-between;">
+                        Summary Across All Files
+                        <button onclick="exportZipperSummaryCsv()" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600;">📥 Export CSV</button>
+                    </div>
+                    <table class="zipper-analysis-summary-table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th style="color:#8b5cf6;">WHP A R²</th>
+                                <th style="color:#38bdf8;">WHP B R²</th>
+                                <th>Best Match <span class="r2-info-icon">i<span class="r2-info-tooltip"><span style="color:#22c55e;">●</span> R² ≥ 80% — Strong<br><span style="color:#f59e0b;">●</span> R² 50%–79% — Moderate<br><span style="color:#ef4444;">●</span> R² &lt; 50% — Weak</span></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            fileResults.forEach(fr => {
+                const tie = Math.abs(fr.corrA.r2 - fr.corrB.r2) < 0.01;
+                const aWins = fr.corrA.r2 > fr.corrB.r2;
+                const winner = tie ? 'Tie' : (aWins ? 'WHP A' : 'WHP B');
+                const r2A = (fr.corrA.r2 * 100).toFixed(1) + '%';
+                const r2B = (fr.corrB.r2 * 100).toFixed(1) + '%';
+                const winnerR2 = aWins ? fr.corrA.r2 : fr.corrB.r2;
+                const aCls = !tie && aWins ? metricClass(winnerR2) : '';
+                const bCls = !tie && !aWins ? metricClass(winnerR2) : '';
+                const confirmTip = !tie && winnerR2 < 0.5 ? ' <span class="r2-info-icon" style="font-size:0.6rem;">!<span class="r2-info-tooltip">Please plot csv to confirm Wellhead Pressure!</span></span>' : '';
+                summaryHTML += `
+                    <tr>
+                        <td>${fr.well.wellName}</td>
+                        <td class="${aCls}">${r2A}</td>
+                        <td class="${bCls}">${r2B}</td>
+                        <td class="${tie ? '' : 'winner-cell'}">${winner}${confirmTip}</td>
+                    </tr>
+                `;
+            });
+            summaryHTML += `
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 12px; color: #e4e4e7; font-size: 0.85rem;">
+                        Overall: <span class="verdict-highlight">${overallWinner}</span> wins in
+                        ${Math.max(aWinCount, bWinCount)} of ${fileResults.length} files.
+                        ${tieCount > 0 ? '(' + tieCount + ' tied)' : ''}
+                    </div>
+                </div>
+            `;
+
+            summaryEl.innerHTML = summaryHTML;
+
+            // Build per-file details (collapsed by default)
+            let detailsHTML = '';
+            fileResults.forEach((fr, idx) => {
+                const aWins = fr.corrA.r2 > fr.corrB.r2;
+                const bWins = fr.corrB.r2 > fr.corrA.r2;
+                const tie = Math.abs(fr.corrA.r2 - fr.corrB.r2) < 0.01;
+
+                if (idx > 0) detailsHTML += '<hr class="zipper-analysis-file-divider">';
+                detailsHTML += `<div class="zipper-analysis-file-title"><span class="file-icon">📄</span> ${fr.well.fileName}</div>`;
+
+                detailsHTML += '<div class="zipper-analysis-cards">';
+                if (fr.hasWhpA) {
+                    detailsHTML += buildAnalysisCard('Wellhead Pressure A', whpACol, '#8b5cf6', fr.corrA, fr.maeA, fr.rmseA, aWins && !tie, bWins && !tie);
+                }
+                if (fr.hasWhpB) {
+                    detailsHTML += buildAnalysisCard('Wellhead Pressure B', whpBCol, '#22c55e', fr.corrB, fr.maeB, fr.rmseB, bWins && !tie, aWins && !tie);
+                }
+                detailsHTML += '</div>';
+
+                detailsHTML += '<div class="zipper-analysis-verdict">' + buildFileVerdict(fr.well.fileName, whpACol, whpBCol, fr.corrA, fr.corrB) + '</div>';
+            });
+
+            detailsEl.innerHTML = detailsHTML;
+            detailsEl.style.display = 'none';
+            toggleEl.classList.remove('expanded');
+            toggleEl.style.display = fileResults.length > 0 ? 'block' : 'none';
+
+            analysisEl.style.display = 'block';
+        }
+
+        function toggleZipperDetails() {
+            const detailsEl = document.getElementById('zipperAnalysisDetails');
+            const toggleEl = document.getElementById('zipperDetailsToggle');
+            if (detailsEl.style.display === 'none') {
+                detailsEl.style.display = 'block';
+                toggleEl.classList.add('expanded');
+                toggleEl.innerHTML = '<span id="zipperDetailsToggleIcon">▶</span> Hide Detailed Breakdown Per File';
+            } else {
+                detailsEl.style.display = 'none';
+                toggleEl.classList.remove('expanded');
+                toggleEl.innerHTML = '<span id="zipperDetailsToggleIcon">▶</span> Show Detailed Breakdown Per File';
+            }
+        }
+
+        function exportZipperSummaryCsv() {
+            if (!zipperLastFileResults || zipperLastFileResults.length === 0) return;
+
+            const whpACol = zipperLastCols.whpACol || 'WHP A';
+            const whpBCol = zipperLastCols.whpBCol || 'WHP B';
+            const zipCol = zipperLastCols.zipCol || 'Zipper';
+
+            const rows = [];
+            rows.push([
+                'File',
+                'WHP A Column', 'WHP A Pearson r', 'WHP A R²', 'WHP A MAE', 'WHP A RMSE', 'WHP A Data Points',
+                'WHP B Column', 'WHP B Pearson r', 'WHP B R²', 'WHP B MAE', 'WHP B RMSE', 'WHP B Data Points',
+                'Zipper Column', 'Best Match'
+            ]);
+
+            zipperLastFileResults.forEach(fr => {
+                const tie = Math.abs(fr.corrA.r2 - fr.corrB.r2) < 0.01;
+                const aWins = fr.corrA.r2 > fr.corrB.r2;
+                const winner = tie ? 'Tie' : (aWins ? 'WHP A' : 'WHP B');
+
+                rows.push([
+                    fr.well.fileName,
+                    whpACol, fr.corrA.r.toFixed(6), (fr.corrA.r2 * 100).toFixed(2) + '%',
+                    fr.maeA === Infinity ? '' : fr.maeA.toFixed(4),
+                    fr.rmseA === Infinity ? '' : fr.rmseA.toFixed(4),
+                    fr.corrA.n,
+                    whpBCol, fr.corrB.r.toFixed(6), (fr.corrB.r2 * 100).toFixed(2) + '%',
+                    fr.maeB === Infinity ? '' : fr.maeB.toFixed(4),
+                    fr.rmseB === Infinity ? '' : fr.rmseB.toFixed(4),
+                    fr.corrB.n,
+                    zipCol, winner
+                ]);
+            });
+
+            const csvContent = rows.map(row =>
+                row.map(cell => {
+                    const str = String(cell);
+                    return str.includes(',') || str.includes('"') ? '"' + str.replace(/"/g, '""') + '"' : str;
+                }).join(',')
+            ).join('\r\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'swing_well_correlation_summary.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
     </script>
 </body>
 </html>
