@@ -4,9 +4,16 @@ This repository contains multiple versions of the Historical File Import Tool.
 
 ## Available Versions
 
-### Version 6 (Current - Live)
-- **Location**: `index.html` (main entry point) and `versions/v6/Historical File Import Tool.html`
+### Version 7 (Current - Live)
+- **Location**: `index.html` (main entry point) and `versions/v7/Historical File Import Tool.html`
 - **Branch**: `main`
+- **Features**:
+  - CSV Data Viewer fullscreen toggle: expand the CSV viewer to full width, hiding the PDF panel and upload buttons
+  - Toggle button in the CSV Data Viewer header with expand/collapse icons
+  - Auto-resizes chart when toggling fullscreen mode
+
+### Version 6
+- **Location**: `versions/v6/Historical File Import Tool.html`
 - **Features**:
   - Y-axis scale lock: set a Y-axis range and it persists across column toggles until explicitly reset
   - Y-axis locked banner notification with inline Reset button
@@ -52,7 +59,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 ## Accessing Versions
 
 ### GitHub Pages
-- **Current (v6)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **Current (v7)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **v6**: Open `versions/v6/Historical File Import Tool.html`
 - **v5**: Open `versions/v5/Historical File Import Tool.html`
 - **v4**: Open `versions/v4/Historical File Import Tool.html`
 - **v3**: Open `versions/v3/Historical File Import Tool.html`
@@ -60,7 +68,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 - **v1**: Checkout the `v1.0.0` tag or view `versions/v1/Historical File Import Tool.html`
 
 ### Local Access
-- **v6**: Open `index.html` or `versions/v6/Historical File Import Tool.html`
+- **v7**: Open `index.html` or `versions/v7/Historical File Import Tool.html`
+- **v6**: Open `versions/v6/Historical File Import Tool.html`
 - **v5**: Open `versions/v5/Historical File Import Tool.html`
 - **v4**: Open `versions/v4/Historical File Import Tool.html`
 - **v3**: Open `versions/v3/Historical File Import Tool.html`

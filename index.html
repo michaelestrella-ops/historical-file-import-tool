@@ -1873,6 +1873,68 @@
             cursor: row-resize !important;
         }
 
+        /* CSV Data Viewer fullscreen toggle button */
+        .csv-fullscreen-btn {
+            background: transparent;
+            border: 1px solid #3d3d5c;
+            color: #a1a1aa;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .csv-fullscreen-btn:hover {
+            background: #3d3d5c;
+            color: #e4e4e7;
+            border-color: #6366f1;
+        }
+
+        .csv-fullscreen-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .csv-fullscreen-btn .icon-collapse {
+            display: none;
+        }
+
+        .channel-identifier-layout.csv-fullscreen .csv-fullscreen-btn .icon-expand {
+            display: none;
+        }
+
+        .channel-identifier-layout.csv-fullscreen .csv-fullscreen-btn .icon-collapse {
+            display: block;
+        }
+
+        .channel-identifier-layout.csv-fullscreen .pdf-panel,
+        .channel-identifier-layout.csv-fullscreen .panel-resizer {
+            display: none !important;
+        }
+
+        .channel-identifier-layout.csv-fullscreen .chart-panel {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 100% !important;
+        }
+
+        .channel-section-body.csv-viewer-fullscreen > p,
+        .channel-section-body.csv-viewer-fullscreen > .channel-upload-row {
+            display: none !important;
+        }
+
+        .channel-section-body.csv-viewer-fullscreen > .channel-identifier-layout {
+            margin-top: 0;
+        }
+
         @media (max-width: 1200px) {
             .channel-identifier-layout {
                 flex-direction: column !important;
@@ -2940,6 +3002,20 @@
                                 <div class="chart-panel-title">
                                     <span>📈</span>
                                     <span>CSV Data Viewer</span>
+                                    <button class="csv-fullscreen-btn" id="csvFullscreenBtn" onclick="toggleCsvFullscreen()" title="Expand CSV Viewer to full width">
+                                        <svg class="icon-expand" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="10,2 14,2 14,6"/>
+                                            <polyline points="6,14 2,14 2,10"/>
+                                            <line x1="14" y1="2" x2="9.5" y2="6.5"/>
+                                            <line x1="2" y1="14" x2="6.5" y2="9.5"/>
+                                        </svg>
+                                        <svg class="icon-collapse" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="4,10 0,10 0,14"/>
+                                            <polyline points="12,6 16,6 16,2"/>
+                                            <line x1="0" y1="14" x2="5.5" y2="8.5"/>
+                                            <line x1="16" y1="2" x2="10.5" y2="7.5"/>
+                                        </svg>
+                                    </button>
                                 </div>
                                 <div class="csv-upload-mini">
                                     <span class="csv-file-badge" id="csvFileBadge">
@@ -3839,6 +3915,25 @@
                 header.classList.remove('expanded');
                 document.body.classList.remove('channel-section-expanded');
             }
+        }
+
+        function toggleCsvFullscreen() {
+            const layout = document.getElementById('channelIdentifierLayout');
+            if (!layout) return;
+            const isFullscreen = layout.classList.toggle('csv-fullscreen');
+            const sectionBody = document.getElementById('channelSectionBody');
+            if (sectionBody) {
+                sectionBody.classList.toggle('csv-viewer-fullscreen', isFullscreen);
+            }
+            const btn = document.getElementById('csvFullscreenBtn');
+            if (btn) {
+                btn.title = isFullscreen ? 'Restore side-by-side view' : 'Expand CSV Viewer to full width';
+            }
+            setTimeout(() => {
+                if (typeof comparisonChartInstance !== 'undefined' && comparisonChartInstance) {
+                    comparisonChartInstance.resize();
+                }
+            }, 50);
         }
 
         // Helper function to detect file type from filename
