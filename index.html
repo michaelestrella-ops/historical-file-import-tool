@@ -1430,6 +1430,7 @@
             border-bottom: 1px solid #3d3d5c;
             max-height: 120px;
             overflow-y: auto;
+            flex-shrink: 0;
         }
 
         .chart-legend-item {
@@ -1578,6 +1579,52 @@
             color: #e4e4e7;
         }
 
+        /* Y-Axis Locked Banner */
+        .y-axis-locked-banner {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            background: #1a1a2e;
+            border-bottom: 1px solid #3d3d5c;
+            font-size: 0.78rem;
+            color: #a1a1aa;
+            flex-shrink: 0;
+        }
+
+        .y-axis-locked-banner.show {
+            display: flex;
+        }
+
+        .y-axis-locked-banner .lock-icon {
+            color: #f59e0b;
+            font-size: 0.85rem;
+        }
+
+        .y-axis-locked-banner .lock-range {
+            color: #e4e4e7;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.78rem;
+        }
+
+        .y-axis-locked-banner .lock-reset-btn {
+            margin-left: auto;
+            background: none;
+            border: 1px solid #52525b;
+            color: #a1a1aa;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .y-axis-locked-banner .lock-reset-btn:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
         /* Comparison Chart */
         .comparison-chart-container {
             position: relative;
@@ -1624,11 +1671,13 @@
 
         .channel-upload-box {
             flex: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             background: #1a1a2e;
             border: 2px dashed #4d4d6d;
             border-radius: 8px;
-            padding: 12px 16px;
-            text-align: center;
+            padding: 10px 20px;
             transition: all 0.3s ease;
             cursor: pointer;
         }
@@ -1651,28 +1700,25 @@
         }
 
         .channel-upload-box-icon {
-            font-size: 1.5rem;
-            margin-bottom: 4px;
+            font-size: 1.1rem;
         }
 
         .channel-upload-box-title {
             color: #e4e4e7;
-            font-size: 0.875rem;
-            margin-bottom: 2px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .channel-upload-box-subtitle {
-            color: #71717a;
-            font-size: 0.7rem;
+            color: #52525b;
+            font-size: 0.75rem;
         }
 
         .channel-upload-box-file {
             color: #10b981;
             font-size: 0.75rem;
-            margin-top: 4px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 6px;
         }
 
@@ -1796,9 +1842,16 @@
 
         .channel-identifier-layout .comparison-chart-container {
             flex: 1;
-            min-height: 400px;
-            overflow: visible;
-            padding-bottom: 30px;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comparison-chart-canvas-wrapper {
+            flex: 1;
+            min-height: 0;
+            position: relative;
         }
 
         /* Prevent text selection while dragging */
@@ -2823,24 +2876,24 @@
                     <div class="channel-upload-row">
                         <div class="channel-upload-box" id="pdfUploadBox" onclick="document.getElementById('channelPdfInput').click()">
                             <input type="file" id="channelPdfInput" class="file-input" accept=".pdf">
-                            <div class="channel-upload-box-icon">📄</div>
-                            <div class="channel-upload-box-title">Upload PDF File</div>
-                            <div class="channel-upload-box-subtitle">PDF with graphs to compare</div>
-                            <div class="channel-upload-box-file" id="pdfFileName" style="display: none;">
+                            <span class="channel-upload-box-icon">📄</span>
+                            <span class="channel-upload-box-title">Upload PDF File</span>
+                            <span class="channel-upload-box-subtitle">PDF</span>
+                            <span class="channel-upload-box-file" id="pdfFileName" style="display: none;">
                                 <span>✓</span>
                                 <span id="pdfFileNameText"></span>
-                            </div>
+                            </span>
                         </div>
                         
                         <div class="channel-upload-box" id="historicalFileUploadBox" onclick="document.getElementById('channelHistoricalFileInput').click()">
                             <input type="file" id="channelHistoricalFileInput" class="file-input" accept=".csv,.txt,.xlsx,.xls">
-                            <div class="channel-upload-box-icon">📈</div>
-                            <div class="channel-upload-box-title">Upload Historical File</div>
-                            <div class="channel-upload-box-subtitle">CSV/TXT/XLSX with 1-second data</div>
-                            <div class="channel-upload-box-file" id="historicalFileName" style="display: none;">
+                            <span class="channel-upload-box-icon">📈</span>
+                            <span class="channel-upload-box-title">Upload Historical File</span>
+                            <span class="channel-upload-box-subtitle">CSV / TXT / XLSX</span>
+                            <span class="channel-upload-box-file" id="historicalFileName" style="display: none;">
                                 <span>✓</span>
                                 <span id="historicalFileNameText"></span>
-                            </div>
+                            </span>
                         </div>
                     </div>
                     
@@ -2958,7 +3011,15 @@
                                     </div>
                                 </div>
                                 <div class="chart-legend-container" id="chartLegendContainer" style="display: none;"></div>
-                                <canvas id="comparisonChart"></canvas>
+                                <div class="y-axis-locked-banner" id="yAxisLockedBanner">
+                                    <span class="lock-icon">🔒</span>
+                                    <span>Y-Axis locked:</span>
+                                    <span class="lock-range" id="yAxisLockedRange"></span>
+                                    <button class="lock-reset-btn" onclick="resetComparisonChartAxisScale()" title="Reset to auto-scale">Reset</button>
+                                </div>
+                                <div class="comparison-chart-canvas-wrapper">
+                                    <canvas id="comparisonChart"></canvas>
+                                </div>
                                 <div class="comparison-chart-placeholder" id="comparisonChartPlaceholder">
                                     <div class="comparison-chart-placeholder-icon">📊</div>
                                     <div>Select columns from the CSV to plot them here</div>
@@ -3743,6 +3804,8 @@
         let channelCsvRawText = null;
         let selectedColumns = new Set();
         let comparisonChartInstance = null;
+        let comparisonChartLockedYMin = undefined;
+        let comparisonChartLockedYMax = undefined;
         let convertedCsvContent = null; // Store converted CSV content for download (TXT/XLSX files)
         let currentFileType = null; // Track current file type (csv, txt, xlsx)
         let currentFileName = null; // Track current file name
@@ -4659,11 +4722,13 @@
                 placeholder.style.display = 'flex';
                 canvas.style.display = 'none';
                 legendContainer.style.display = 'none';
+                const lockedBanner = document.getElementById('yAxisLockedBanner');
+                if (lockedBanner) lockedBanner.classList.remove('show');
                 if (scalePopup) {
                     scalePopup.classList.remove('show');
                     document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
                 }
-                
+
                 if (comparisonChartInstance) {
                     comparisonChartInstance.destroy();
                     comparisonChartInstance = null;
@@ -4771,8 +4836,8 @@
                                 text: 'Value',
                                 color: '#a1a1aa'
                             },
-                            min: undefined,
-                            max: undefined,
+                            min: comparisonChartLockedYMin,
+                            max: comparisonChartLockedYMax,
                             ticks: {
                                 color: '#71717a'
                             },
@@ -4786,8 +4851,8 @@
 
             const compMinInput = document.getElementById('comparisonChartYMin');
             const compMaxInput = document.getElementById('comparisonChartYMax');
-            if (compMinInput) compMinInput.value = '';
-            if (compMaxInput) compMaxInput.value = '';
+            if (compMinInput) compMinInput.value = comparisonChartLockedYMin !== undefined ? comparisonChartLockedYMin : '';
+            if (compMaxInput) compMaxInput.value = comparisonChartLockedYMax !== undefined ? comparisonChartLockedYMax : '';
 
             function handleComparisonChartCanvasClick(e) {
                 if (!comparisonChartInstance) return;
@@ -4823,6 +4888,23 @@
 
             if (compMinInput) compMinInput.onkeydown = function(e) { if (e.key === 'Enter') applyComparisonChartAxisScale(); };
             if (compMaxInput) compMaxInput.onkeydown = function(e) { if (e.key === 'Enter') applyComparisonChartAxisScale(); };
+
+            updateYAxisLockedBanner();
+        }
+
+        function updateYAxisLockedBanner() {
+            const banner = document.getElementById('yAxisLockedBanner');
+            const rangeSpan = document.getElementById('yAxisLockedRange');
+            if (!banner || !rangeSpan) return;
+            const hasLock = comparisonChartLockedYMin !== undefined || comparisonChartLockedYMax !== undefined;
+            if (hasLock) {
+                const minLabel = comparisonChartLockedYMin !== undefined ? comparisonChartLockedYMin : 'auto';
+                const maxLabel = comparisonChartLockedYMax !== undefined ? comparisonChartLockedYMax : 'auto';
+                rangeSpan.textContent = minLabel + ' — ' + maxLabel;
+                banner.classList.add('show');
+            } else {
+                banner.classList.remove('show');
+            }
         }
 
         function applyComparisonChartAxisScale() {
@@ -4831,12 +4913,17 @@
             const maxInput = document.getElementById('comparisonChartYMax');
             const minVal = minInput ? minInput.value.trim() : '';
             const maxVal = maxInput ? maxInput.value.trim() : '';
+            const parsedMin = minVal === '' ? undefined : parseFloat(minVal);
+            const parsedMax = maxVal === '' ? undefined : parseFloat(maxVal);
+            if (minVal !== '' && isNaN(parsedMin)) return;
+            if (maxVal !== '' && isNaN(parsedMax)) return;
             const scale = comparisonChartInstance.options.scales.y;
-            scale.min = minVal === '' ? undefined : parseFloat(minVal);
-            scale.max = maxVal === '' ? undefined : parseFloat(maxVal);
-            if (minVal !== '' && isNaN(scale.min)) return;
-            if (maxVal !== '' && isNaN(scale.max)) return;
+            scale.min = parsedMin;
+            scale.max = parsedMax;
+            comparisonChartLockedYMin = parsedMin;
+            comparisonChartLockedYMax = parsedMax;
             comparisonChartInstance.update();
+            updateYAxisLockedBanner();
         }
 
         function resetComparisonChartAxisScale() {
@@ -4845,9 +4932,12 @@
             const maxInput = document.getElementById('comparisonChartYMax');
             if (minInput) minInput.value = '';
             if (maxInput) maxInput.value = '';
+            comparisonChartLockedYMin = undefined;
+            comparisonChartLockedYMax = undefined;
             comparisonChartInstance.options.scales.y.min = undefined;
             comparisonChartInstance.options.scales.y.max = undefined;
             comparisonChartInstance.update();
+            updateYAxisLockedBanner();
         }
 
         function closeComparisonChartScalePopup() {
@@ -4869,6 +4959,8 @@
             channelCsvHeaders = [];
             channelCsvRawText = null;
             selectedColumns.clear();
+            comparisonChartLockedYMin = undefined;
+            comparisonChartLockedYMax = undefined;
             
             const historicalFileUploadBox = document.getElementById('historicalFileUploadBox');
             const historicalFileName = document.getElementById('historicalFileName');
@@ -4906,6 +4998,8 @@
                 comparisonScalePopup.classList.remove('show');
                 document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
             }
+            const clearLockedBanner = document.getElementById('yAxisLockedBanner');
+            if (clearLockedBanner) clearLockedBanner.classList.remove('show');
             
             checkLayoutVisibility();
             
@@ -5110,13 +5204,13 @@
                 let newHeight = startHeight + deltaY;
                 
                 const minHeight = 80;
-                const maxHeight = chartPanel.clientHeight - 200;
+                const maxHeight = 600;
                 
                 newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
                 
                 columnSelector.style.height = newHeight + 'px';
                 
-                window.dispatchEvent(new Event('resize'));
+                if (comparisonChartInstance) comparisonChartInstance.resize();
             });
             
             document.addEventListener('mouseup', function(e) {

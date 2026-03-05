@@ -4,9 +4,29 @@ This repository contains multiple versions of the Historical File Import Tool.
 
 ## Available Versions
 
-### Version 3 (Current - Live)
-- **Location**: `index.html` (main entry point) and `versions/v3/Historical File Import Tool.html`
+### Version 6 (Current - Live)
+- **Location**: `index.html` (main entry point) and `versions/v6/Historical File Import Tool.html`
 - **Branch**: `main`
+- **Features**:
+  - Y-axis scale lock: set a Y-axis range and it persists across column toggles until explicitly reset
+  - Y-axis locked banner notification with inline Reset button
+  - X-axis visibility fix: canvas wrapper ensures chart never clips the X-axis
+  - Compact inline upload buttons for Channel Identifier section (matches Swing Well Mapping style)
+  - Column resizer directly triggers Chart.js resize for smoother interaction
+
+### Version 5
+- **Location**: `versions/v5/Historical File Import Tool.html`
+- **Features**:
+  - Swing Well Mapping section
+  - Styling refinements
+
+### Version 4
+- **Location**: `versions/v4/Historical File Import Tool.html`
+- **Features**:
+  - TXT support, average-range filter, bulk convert
+
+### Version 3
+- **Location**: `versions/v3/Historical File Import Tool.html`
 - **Tag**: `v3`
 - **Features**:
   - Y-axis scale popup: click the chart Y-axis to set min/max scale
@@ -32,43 +52,17 @@ This repository contains multiple versions of the Historical File Import Tool.
 ## Accessing Versions
 
 ### GitHub Pages
-- **Current (v3)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **Current (v6)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **v5**: Open `versions/v5/Historical File Import Tool.html`
+- **v4**: Open `versions/v4/Historical File Import Tool.html`
+- **v3**: Open `versions/v3/Historical File Import Tool.html`
 - **v2**: Checkout the `v2.0.0` tag or view `versions/v2/Historical File Import Tool.html`
 - **v1**: Checkout the `v1.0.0` tag or view `versions/v1/Historical File Import Tool.html`
 
 ### Local Access
-- **v3**: Open `index.html` or `versions/v3/Historical File Import Tool.html`
+- **v6**: Open `index.html` or `versions/v6/Historical File Import Tool.html`
+- **v5**: Open `versions/v5/Historical File Import Tool.html`
+- **v4**: Open `versions/v4/Historical File Import Tool.html`
+- **v3**: Open `versions/v3/Historical File Import Tool.html`
 - **v2**: Open `versions/v2/Historical File Import Tool.html`
 - **v1**: Open `versions/v1/Historical File Import Tool.html`
-
-## Switching Versions
-
-### To use v1 locally:
-```bash
-git checkout v1.0.0
-# or
-git checkout main
-```
-
-### To use v2 locally:
-```bash
-git checkout v2.0.0
-# or
-git checkout enhanced-version
-```
-
-## GitHub Pages Configuration
-
-To change which version is served on GitHub Pages:
-1. Go to repository **Settings → Pages**
-2. Under **Build and deployment**, set **Source** to **Deploy from a branch**
-3. Choose branch and folder:
-   - **For v3 (current)**: Branch `main`, folder `/ (root)`
-   - For v2: Use `enhanced-version` branch
-   - For v1: Use `main` with an older commit or tag
-
-## Rollback Instructions
-
-If you need to rollback to v1:
-1. Switch GitHub Pages to use `main` branch
-2. Or checkout the `v1.0.0` tag locally
