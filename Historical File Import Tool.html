@@ -3875,6 +3875,8 @@
 
         let channelPdfDoc = null;
         let channelPdfScale = 1.0;
+        let pdfRenderId = 0;
+        let pdfZoomDebounceTimer = null;
         let channelCsvData = null;
         let channelCsvHeaders = [];
         let channelCsvRawText = null;
@@ -4074,6 +4076,8 @@
 
         async function rerenderPdf() {
             if (!channelPdfDoc) return;
+
+            const thisRenderId = ++pdfRenderId;
             
             const container = document.getElementById('pdfViewerContainer');
             const numPages = channelPdfDoc.numPages;
@@ -4087,7 +4091,11 @@
             container.innerHTML = '';
             
             for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                if (thisRenderId !== pdfRenderId) return;
+
                 const page = await channelPdfDoc.getPage(pageNum);
+                if (thisRenderId !== pdfRenderId) return;
+
                 const viewport = page.getViewport({ scale: channelPdfScale });
                 
                 const canvas = document.createElement('canvas');
@@ -4101,6 +4109,8 @@
                     canvasContext: context,
                     viewport: viewport
                 }).promise;
+
+                if (thisRenderId !== pdfRenderId) return;
                 
                 const pageIndicator = document.createElement('div');
                 pageIndicator.className = 'pdf-page-indicator';
@@ -4129,7 +4139,8 @@
         function zoomPdfToValue(percentage) {
             channelPdfScale = Math.max(0.25, Math.min(3.0, percentage / 100));
             updateZoomLevel();
-            rerenderPdf();
+            clearTimeout(pdfZoomDebounceTimer);
+            pdfZoomDebounceTimer = setTimeout(rerenderPdf, 100);
         }
 
         function fitPdfToWidth() {
@@ -4159,6 +4170,8 @@
         function clearPdfFile() {
             channelPdfDoc = null;
             channelPdfScale = 1.0;
+            pdfRenderId++;
+            clearTimeout(pdfZoomDebounceTimer);
             
             const pdfUploadBox = document.getElementById('pdfUploadBox');
             const pdfFileName = document.getElementById('pdfFileName');
