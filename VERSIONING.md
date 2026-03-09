@@ -4,8 +4,15 @@ This repository contains multiple versions of the Historical File Import Tool.
 
 ## Available Versions
 
-### Version 7 (Current - Live)
-- **Location**: `index.html` (main entry point) and `versions/v7/Historical File Import Tool.html`
+### Version 8 (Current - Live)
+- **Location**: `index.html` (main entry point) and `versions/v8/Historical File Import Tool.html`
+- **Branch**: `main`
+- **Features**:
+  - Black background theme: replaced all blue/purple-tinted dark colors with true black and neutral grays
+  - Consistent dark UI matching Corva-style interface
+
+### Version 7
+- **Location**: `versions/v7/Historical File Import Tool.html`
 - **Branch**: `main`
 - **Features**:
   - CSV Data Viewer fullscreen toggle: expand the CSV viewer to full width, hiding the PDF panel and upload buttons
@@ -59,7 +66,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 ## Accessing Versions
 
 ### GitHub Pages
-- **Current (v7)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **Current (v8)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **v7**: Open `versions/v7/Historical File Import Tool.html`
 - **v6**: Open `versions/v6/Historical File Import Tool.html`
 - **v5**: Open `versions/v5/Historical File Import Tool.html`
 - **v4**: Open `versions/v4/Historical File Import Tool.html`
@@ -68,7 +76,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 - **v1**: Checkout the `v1.0.0` tag or view `versions/v1/Historical File Import Tool.html`
 
 ### Local Access
-- **v7**: Open `index.html` or `versions/v7/Historical File Import Tool.html`
+- **v8**: Open `index.html` or `versions/v8/Historical File Import Tool.html`
+- **v7**: Open `versions/v7/Historical File Import Tool.html`
 - **v6**: Open `versions/v6/Historical File Import Tool.html`
 - **v5**: Open `versions/v5/Historical File Import Tool.html`
 - **v4**: Open `versions/v4/Historical File Import Tool.html`
