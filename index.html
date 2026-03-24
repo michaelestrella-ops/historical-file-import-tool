@@ -3025,8 +3025,8 @@
         }
 
         .column-checkboxes {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 6px;
         }
 
@@ -3040,6 +3040,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: 1px solid transparent;
+            min-width: 0;
         }
 
         .column-checkbox-item:hover {
@@ -3062,7 +3063,11 @@
         .column-checkbox-label {
             color: #e4e4e7;
             font-size: 0.8rem;
-            word-break: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            min-width: 0;
         }
 
         .column-color-dot {
@@ -3108,6 +3113,7 @@
 
         /* Values ≤ 0 Collapsible Section */
         .zero-columns-section {
+            grid-column: 1 / -1;
             margin-top: 12px;
             border: 1px solid #2a2a2a;
             border-radius: 8px;
@@ -3163,13 +3169,13 @@
         }
 
         .zero-columns-body.expanded {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 6px;
         }
 
         .zero-columns-hint {
-            width: 100%;
+            grid-column: 1 / -1;
             color: #52525b;
             font-size: 0.7rem;
             margin-bottom: 6px;
@@ -8457,9 +8463,7 @@
                 // Update upload row visibility and resize chart after a short delay
                 setTimeout(() => {
                     updateUploadRowVisibility();
-                    if (comparisonChartInstance) {
-                        comparisonChartInstance.resize();
-                    }
+                    resizeComparisonChart();
                 }, 100);
             } else {
                 sectionBody.style.display = 'none';
@@ -8482,7 +8486,7 @@
             }
             setTimeout(() => {
                 if (typeof comparisonChartInstance !== 'undefined' && comparisonChartInstance) {
-                    comparisonChartInstance.resize();
+                    resizeComparisonChart();
                 }
             }, 50);
         }
@@ -9303,20 +9307,10 @@
             });
 
             if (zeroSection) {
-                const zeroHeader = zeroSection.querySelector('.zero-columns-header');
-                const zeroBody = zeroSection.querySelector('.zero-columns-body');
-                if (normalizedSearch || avgFilterActive) {
-                    if (zeroSectionVisibleCount > 0) {
-                        zeroSection.style.display = '';
-                        zeroHeader.classList.add('expanded');
-                        zeroBody.classList.add('expanded');
-                    } else {
-                        zeroSection.style.display = 'none';
-                    }
+                if ((normalizedSearch || avgFilterActive) && zeroSectionVisibleCount === 0) {
+                    zeroSection.style.display = 'none';
                 } else {
                     zeroSection.style.display = '';
-                    zeroHeader.classList.remove('expanded');
-                    zeroBody.classList.remove('expanded');
                 }
             }
 
@@ -9388,8 +9382,23 @@
                 document.removeEventListener('click', closeComparisonChartScalePopupOnClickOutside);
             }
             
-            // Prepare chart data and legend
-            const labels = channelCsvData.map((_, index) => index + 1); // Time index (1-second intervals)
+            // Downsample data if there are too many points for smooth rendering
+            const totalRows = channelCsvData.length;
+            const maxPoints = 2000;
+            let sampleIndices;
+            if (totalRows > maxPoints) {
+                const step = (totalRows - 1) / (maxPoints - 1);
+                sampleIndices = new Array(maxPoints);
+                for (let i = 0; i < maxPoints; i++) {
+                    sampleIndices[i] = Math.round(i * step);
+                }
+            } else {
+                sampleIndices = null;
+            }
+
+            const labels = sampleIndices
+                ? sampleIndices.map(i => i + 1)
+                : channelCsvData.map((_, index) => index + 1);
             const datasets = [];
             const legendItems = [];
             
@@ -9398,15 +9407,18 @@
                 if (selectedColumns.has(header)) {
                     const color = channelColors[colorIndex % channelColors.length];
                     const average = calculateChannelColumnAverage(header);
+                    const rawData = sampleIndices
+                        ? sampleIndices.map(i => parseFloat(channelCsvData[i][header]) || 0)
+                        : channelCsvData.map(row => parseFloat(row[header]) || 0);
                     
                     datasets.push({
                         label: header,
-                        data: channelCsvData.map(row => parseFloat(row[header]) || 0),
+                        data: rawData,
                         borderColor: color,
                         backgroundColor: color + '20',
                         borderWidth: 1.5,
                         pointRadius: 0,
-                        tension: 0.1,
+                        tension: 0,
                         fill: false
                     });
                     
@@ -9433,36 +9445,64 @@
                 comparisonChartInstance.destroy();
             }
             
+            // Size canvas to fill its container (responsive: false)
+            const wrapper = canvas.parentElement;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+
             // Create new chart
             const ctx = canvas.getContext('2d');
+            // Throttle mousemove to cap hover/tooltip cost
+            const hoverThrottlePlugin = {
+                id: 'hoverThrottle',
+                beforeEvent(chart, args) {
+                    if (args.event.type === 'mousemove') {
+                        const now = Date.now();
+                        if (chart._lastHover && now - chart._lastHover < 80) {
+                            return false;
+                        }
+                        chart._lastHover = now;
+                    }
+                }
+            };
+
             comparisonChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: datasets
                 },
+                plugins: [hoverThrottlePlugin],
                 options: {
-                    responsive: true,
+                    responsive: false,
                     maintainAspectRatio: false,
                     animation: false,
+                    devicePixelRatio: 1,
                     interaction: {
-                        mode: 'index',
-                        intersect: false
+                        mode: 'nearest',
+                        intersect: false,
+                        axis: 'x'
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: false,
+                        axis: 'x'
                     },
                     plugins: {
                         legend: {
                             display: false
                         },
                         tooltip: {
+                            mode: 'nearest',
+                            intersect: false,
+                            axis: 'x',
                             backgroundColor: '#181818',
                             titleColor: '#e4e4e7',
                             bodyColor: '#a1a1aa',
                             borderColor: '#2a2a2a',
                             borderWidth: 1
-                        },
-                        decimation: {
-                            enabled: true,
-                            algorithm: 'min-max'
                         }
                     },
                     scales: {
@@ -9574,7 +9614,7 @@
             scale.max = parsedMax;
             comparisonChartLockedYMin = parsedMin;
             comparisonChartLockedYMax = parsedMax;
-            comparisonChartInstance.update();
+            comparisonChartInstance.update('none');
             updateYAxisLockedBanner();
         }
 
@@ -9588,7 +9628,7 @@
             comparisonChartLockedYMax = undefined;
             comparisonChartInstance.options.scales.y.min = undefined;
             comparisonChartInstance.options.scales.y.max = undefined;
-            comparisonChartInstance.update();
+            comparisonChartInstance.update('none');
             updateYAxisLockedBanner();
         }
 
@@ -9763,15 +9803,24 @@
         // ============================================
 
         // ============================================
-        // THROTTLED CHART RESIZE (rAF-based, prevents per-pixel resize lag)
+        // THROTTLED CHART RESIZE (timer-based, prevents per-pixel resize lag)
         // ============================================
-        let _chartResizeRAF = null;
+        let _chartResizeTimer = null;
+        function resizeComparisonChart() {
+            if (!comparisonChartInstance) return;
+            const canvas = document.getElementById('comparisonChart');
+            if (!canvas) return;
+            const wrapper = canvas.parentElement;
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+            comparisonChartInstance.resize();
+        }
         function throttledChartResize() {
-            if (_chartResizeRAF) return;
-            _chartResizeRAF = requestAnimationFrame(() => {
-                _chartResizeRAF = null;
-                if (comparisonChartInstance) comparisonChartInstance.resize();
-            });
+            if (_chartResizeTimer) return;
+            _chartResizeTimer = setTimeout(() => {
+                _chartResizeTimer = null;
+                resizeComparisonChart();
+            }, 150);
         }
 
         // ============================================
@@ -9833,7 +9882,7 @@
                 isResizing = false;
                 resizer.classList.remove('dragging');
                 document.body.classList.remove('resizing');
-                if (comparisonChartInstance) comparisonChartInstance.resize();
+                resizeComparisonChart();
 
                 // Save panel width to localStorage
                 localStorage.setItem('pdfPanelWidth', pdfPanel.style.width);
@@ -9875,8 +9924,8 @@
                 isResizing = false;
                 resizer.classList.remove('dragging');
                 document.body.classList.remove('resizing');
-                if (comparisonChartInstance) comparisonChartInstance.resize();
-                
+                resizeComparisonChart();
+
                 localStorage.setItem('pdfPanelWidth', pdfPanel.style.width);
             });
             
@@ -9884,7 +9933,7 @@
             resizer.addEventListener('dblclick', function() {
                 pdfPanel.style.width = '50%';
                 localStorage.removeItem('pdfPanelWidth');
-                if (comparisonChartInstance) comparisonChartInstance.resize();
+                resizeComparisonChart();
             });
         }
         
@@ -9947,7 +9996,7 @@
                 isResizing = false;
                 resizer.classList.remove('dragging');
                 document.body.classList.remove('resizing-vertical');
-                if (comparisonChartInstance) comparisonChartInstance.resize();
+                resizeComparisonChart();
                 
                 // Save column selector height to localStorage
                 localStorage.setItem('columnSelectorHeight', columnContainer.style.height);
@@ -9987,7 +10036,7 @@
                 isResizing = false;
                 resizer.classList.remove('dragging');
                 document.body.classList.remove('resizing-vertical');
-                if (comparisonChartInstance) comparisonChartInstance.resize();
+                resizeComparisonChart();
                 
                 localStorage.setItem('columnSelectorHeight', columnContainer.style.height);
             });
@@ -9996,7 +10045,7 @@
             resizer.addEventListener('dblclick', function() {
                 columnContainer.style.height = '200px';
                 localStorage.removeItem('columnSelectorHeight');
-                if (comparisonChartInstance) comparisonChartInstance.resize();
+                resizeComparisonChart();
             });
         }
         
@@ -10028,7 +10077,7 @@
             // Resize chart on window resize when in full-width mode
             window.addEventListener('resize', function() {
                 if (document.body.classList.contains('channel-section-expanded') && comparisonChartInstance) {
-                    comparisonChartInstance.resize();
+                    resizeComparisonChart();
                 }
             });
             
