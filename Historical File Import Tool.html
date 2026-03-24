@@ -5919,6 +5919,7 @@
         // Initialize the mapping selector
         async function initializeMappingSelector() {
             const mappingButtons = document.getElementById('mappingButtons');
+            if (!mappingButtons) return;
             mappingButtons.innerHTML = '';
 
             // Separate built-in and custom configs
@@ -6284,59 +6285,63 @@
             document.getElementById('copyJsonBtn').style.display = 'inline-block';
         }
 
-        // File upload functionality
+        // File upload functionality (only when mapping section exists)
         const uploadSection = document.getElementById('uploadSection');
         const csvFileInput = document.getElementById('csvFileInput');
         const txtFileInput = document.getElementById('txtFileInput');
         const xlsxFileInput = document.getElementById('xlsxFileInput');
 
-        // CSV file input handler
-        csvFileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                processFile(e.target.files[0], 'csv');
-            }
-        });
-
-        // TXT file input handler
-        txtFileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                processFile(e.target.files[0], 'txt');
-            }
-        });
-
-        // XLSX file input handler
-        xlsxFileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                processFile(e.target.files[0], 'xlsx');
-            }
-        });
-
-        // Drag and drop functionality (maintains backward compatibility)
-        uploadSection.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadSection.classList.add('dragover');
-        });
-
-        uploadSection.addEventListener('dragleave', () => {
-            uploadSection.classList.remove('dragover');
-        });
-
-        uploadSection.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
-                const fileName = file.name.toLowerCase();
-                let fileType = 'txt';
-                if (fileName.endsWith('.csv')) {
-                    fileType = 'csv';
-                } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-                    fileType = 'xlsx';
+        if (csvFileInput) {
+            csvFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    processFile(e.target.files[0], 'csv');
                 }
-                processFile(file, fileType);
-            }
-        });
+            });
+        }
+
+        if (txtFileInput) {
+            txtFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    processFile(e.target.files[0], 'txt');
+                }
+            });
+        }
+
+        if (xlsxFileInput) {
+            xlsxFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    processFile(e.target.files[0], 'xlsx');
+                }
+            });
+        }
+
+        if (uploadSection) {
+            uploadSection.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadSection.classList.add('dragover');
+            });
+
+            uploadSection.addEventListener('dragleave', () => {
+                uploadSection.classList.remove('dragover');
+            });
+
+            uploadSection.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadSection.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    const fileName = file.name.toLowerCase();
+                    let fileType = 'txt';
+                    if (fileName.endsWith('.csv')) {
+                        fileType = 'csv';
+                    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                        fileType = 'xlsx';
+                    }
+                    processFile(file, fileType);
+                }
+            });
+        }
 
         function processFile(file, fileType) {
             // Validate file type
@@ -10475,11 +10480,11 @@
             const chartModal = document.getElementById('chartModal');
             document.addEventListener('click', function(event) {
                 // Close config modal if clicking on backdrop
-                if (event.target === modal) {
+                if (modal && event.target === modal) {
                     closeCreateModal();
                 }
                 // Close chart modal if clicking on backdrop
-                if (event.target === chartModal) {
+                if (chartModal && event.target === chartModal) {
                     closeChartModal();
                 }
                 // Close config dropdowns if clicking outside
@@ -10505,10 +10510,10 @@
             // Close modals with ESC key
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
-                    if (modal.classList.contains('show')) {
+                    if (modal && modal.classList.contains('show')) {
                         closeCreateModal();
                     }
-                    if (chartModal.classList.contains('show')) {
+                    if (chartModal && chartModal.classList.contains('show')) {
                         closeChartModal();
                     }
                 }
