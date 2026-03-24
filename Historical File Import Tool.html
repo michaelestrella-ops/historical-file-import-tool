@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>CSV/TXT Column Mapper - Multi-Configuration</title>
+            <title>Historical File Import Tool</title>
     <style>
         * {
             margin: 0;
@@ -4550,6 +4550,411 @@
                 min-width: 100%;
             }
         }
+
+        /* Trim CSV Data Section */
+        .trim-section {
+            background: #181818;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #2a2a2a;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .trim-section-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 30px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            user-select: none;
+            position: relative;
+            background: linear-gradient(135deg, #181818 0%, #0a0a0a 100%);
+        }
+
+        .trim-section-header:hover {
+            background: linear-gradient(135deg, #1e1e1e 0%, #1e1e1e 100%);
+        }
+
+        .trim-section-header h3 {
+            color: #e4e4e7;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .trim-section-toggle {
+            color: #71717a;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            position: absolute;
+            right: 30px;
+        }
+
+        .trim-section-header.expanded .trim-section-toggle {
+            transform: rotate(180deg);
+        }
+
+        .trim-section-body {
+            padding: 25px 30px;
+        }
+
+        .trim-upload-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #0a0a0a;
+            border: 2px dashed #333333;
+            border-radius: 8px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .trim-upload-box:hover {
+            border-color: #6366f1;
+            background: #1a1a2e;
+        }
+
+        .trim-upload-box.dragover {
+            border-color: #818cf8;
+            background: #1a1a2e;
+        }
+
+        .trim-file-list {
+            background: #121212;
+            border: 1px solid #2d2d44;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-top: 14px;
+            display: none;
+        }
+
+        .trim-file-list-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .trim-file-list-title {
+            color: #e4e4e7;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .trim-file-count {
+            color: #71717a;
+            font-size: 0.8rem;
+            background: #181818;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        .trim-add-more-btn {
+            margin-left: auto;
+            background: transparent;
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+            padding: 4px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.15s;
+        }
+
+        .trim-add-more-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .trim-clear-all-btn {
+            background: transparent;
+            color: #71717a;
+            border: 1px solid #3a3a3a;
+            padding: 4px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.15s;
+        }
+
+        .trim-clear-all-btn:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .trim-files-area {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .trim-file-pill {
+            background: #181828;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            padding: 7px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .trim-file-pill:hover {
+            border-color: #3b82f6;
+            background: #1a1a30;
+        }
+
+        .trim-file-pill.active {
+            border-color: #3b82f6;
+            background: #1a1a3a;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .trim-file-pill .trim-pill-icon {
+            font-size: 0.9rem;
+        }
+
+        .trim-file-pill .trim-pill-name {
+            color: #c7d2fe;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .trim-file-pill .trim-pill-remove {
+            color: #71717a;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            transition: color 0.15s;
+            padding: 0 2px;
+        }
+
+        .trim-file-pill .trim-pill-remove:hover {
+            color: #ef4444;
+        }
+
+        .trim-row-config {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .trim-row-field label {
+            display: block;
+            color: #a1a1aa;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        .trim-row-field input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #3b82f6;
+            color: #e4e4e7;
+            font-size: 1.1rem;
+            padding: 6px 0;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .trim-row-field input:focus {
+            border-bottom-color: #818cf8;
+        }
+
+        .trim-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .trim-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .trim-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .trim-process-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+        }
+
+        .trim-process-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .trim-download-btn {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #fff;
+            display: none;
+        }
+
+        .trim-download-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+
+        .trim-preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .trim-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .trim-preview-header h4 {
+            color: #a1a1aa;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trim-preview-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .trim-preview-badge.raw {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+
+        .trim-preview-badge.trimmed {
+            background: #052e16;
+            color: #4ade80;
+            border: 1px solid #166534;
+        }
+
+        .trim-preview-table .header-row td {
+            color: #a5b4fc;
+            font-weight: 600;
+            background: #1a1a2e;
+        }
+
+        .trim-preview-table .skipped-row td {
+            color: #52525b;
+            text-decoration: line-through;
+            background: #0f0f0f;
+        }
+
+        .trim-preview-stats {
+            color: #71717a;
+            font-size: 0.8rem;
+        }
+
+        .trim-preview-stats span {
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+
+        .trim-preview-table-wrapper {
+            max-height: 320px;
+            overflow: auto;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+        }
+
+        .trim-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .trim-preview-table th {
+            background: #1a1a2e;
+            color: #a5b4fc;
+            padding: 8px 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            border-bottom: 2px solid #3b82f6;
+            white-space: nowrap;
+        }
+
+        .trim-preview-table td {
+            padding: 6px 12px;
+            border-bottom: 1px solid #1e1e1e;
+            color: #d4d4d8;
+            white-space: nowrap;
+        }
+
+        .trim-preview-table tr:hover td {
+            background: #1a1a2e;
+        }
+
+        .trim-preview-table .unit-row td {
+            color: #71717a;
+            font-style: italic;
+            background: #0f0f1a;
+        }
+
+        .trim-status {
+            margin-top: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: none;
+            text-align: center;
+        }
+
+        .trim-status.success {
+            background: #052e16;
+            border: 1px solid #166534;
+            color: #4ade80;
+            display: block;
+        }
+
+        .trim-status.error {
+            background: #2a0a0a;
+            border: 1px solid #7f1d1d;
+            color: #f87171;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .trim-row-config {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
     </style>
     <!-- SheetJS library for Excel file processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -4561,102 +4966,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>CSV/TXT Column Mapper</h1>
-            <p>Historical File Mapping Tool</p>
+            <h1>Historical File Import Tool</h1>
+            <p>CSV/TXT Processing & Analysis</p>
         </div>
         
         <div class="content">
-            <div class="mapping-selector">
-                <div class="mapping-section-header expanded" id="mappingSectionHeader" onclick="toggleMappingSection()">
-                    <h3>⚙️ Select Mapping Configuration</h3>
-                    <span class="mapping-section-toggle" id="mappingSectionToggle">▼</span>
-                </div>
-                
-                <div class="mapping-section-body" id="mappingSectionBody">
-                    <div class="mapping-buttons" id="mappingButtons">
-                        <!-- Mapping buttons will be generated here -->
-                    </div>
-                    <button class="create-config-btn" onclick="openCreateModal()">
-                        ➕ Create New Configuration
-                    </button>
-
-                    <div class="upload-section" id="uploadSection">
-                        <h3>📤 Upload Your File</h3>
-                        <p>Choose the appropriate upload method for your file type</p>
-                        
-                        <div class="upload-buttons">
-                            <div class="upload-option">
-                                <h4>CSV Files</h4>
-                                <p>Standard CSV format files</p>
-                                <input type="file" id="csvFileInput" class="file-input" accept=".csv">
-                                <button class="upload-btn csv-btn" onclick="document.getElementById('csvFileInput').click()">
-                                    Upload CSV File
-                                </button>
-                            </div>
-                            
-                            <div class="upload-option">
-                                <h4>TXT Files</h4>
-                                <p>Text files requiring special processing</p>
-                                <input type="file" id="txtFileInput" class="file-input" accept=".txt">
-                                <button class="upload-btn txt-btn" onclick="document.getElementById('txtFileInput').click()">
-                                    Upload TXT File
-                                </button>
-                            </div>
-                            
-                            <div class="upload-option">
-                                <h4>XLSX Files</h4>
-                                <p>Excel files that will be converted to CSV</p>
-                                <input type="file" id="xlsxFileInput" class="file-input" accept=".xlsx,.xls">
-                                <button class="upload-btn xlsx-btn" onclick="document.getElementById('xlsxFileInput').click()">
-                                    Upload XLSX File
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="file-info" id="fileInfo"></div>
-                    </div>
-
-                    <div class="current-mapping" id="currentMapping">
-                        <strong>Current Configuration:</strong><br>
-                        <span id="currentMappingName">None Selected</span>
-                        <button id="copyJsonBtn" class="copy-json-btn" onclick="copyConfigurationToClipboard()" style="display: none;">📋 Copy JSON</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal for creating/editing configuration -->
-            <div id="createConfigModal" class="modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 id="configModalTitle">Create New Mapping Configuration</h3>
-                        <button class="close-modal" onclick="closeCreateModal()">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="configName">Configuration Name:</label>
-                            <input type="text" id="configName" placeholder="e.g., My Custom Config" />
-                            <small id="configNameHint">Enter a unique name for this configuration</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="configHeaderRow">Header Row:</label>
-                            <input type="number" id="configHeaderRow" min="1" value="1" placeholder="1" />
-                            <small>Which row contains the column headers? (1 = first row, 14 = row 14, etc.)</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="configJson">JSON Configuration:</label>
-                            <textarea id="configJson" placeholder='Paste your JSON configuration here...&#10;&#10;Example:&#10;{&#10;  "mappings": {&#10;    "date_time": {&#10;      "column": "Time"&#10;    },&#10;    "wellhead_pressure": {&#10;      "column": "PRESION_PPAL",&#10;      "source_unit": "psi"&#10;    }&#10;  }&#10;}' oninput="validateJsonInput()"></textarea>
-                            <small>Paste a valid JSON configuration object with a "mappings" property</small>
-                        </div>
-                        <div id="jsonError" class="json-error"></div>
-                        <div id="jsonSuccess" class="json-success"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
-                        <button class="btn btn-primary" id="saveConfigBtn" onclick="saveConfiguration()">Save Configuration</button>
-                    </div>
-                </div>
-            </div>
-
             <!-- Modal for displaying column chart -->
             <div id="chartModal" class="chart-modal">
                 <div class="chart-modal-content">
@@ -5156,6 +5470,81 @@
                             <span id="zipperDetailsToggleIcon">▶</span> Show Detailed Breakdown Per File
                         </div>
                         <div class="zipper-analysis-details" id="zipperAnalysisDetails" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trim CSV Data Section -->
+            <div class="trim-section">
+                <div class="trim-section-header" id="trimSectionHeader" onclick="toggleTrimSection()">
+                    <h3>
+                        <svg width="24" height="18" viewBox="0 0 24 18" style="vertical-align: middle; margin-right: 6px;">
+                            <rect width="24" height="18" rx="2" fill="#ffffff"/>
+                            <line x1="4" y1="5" x2="20" y2="5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3,2"/>
+                            <line x1="4" y1="13" x2="20" y2="13" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3,2"/>
+                            <rect x="3" y="7" width="18" height="4" rx="1" fill="#3b82f6" opacity="0.5"/>
+                        </svg>
+                        Trim CSV Data (WL Historicals)
+                    </h3>
+                    <span class="trim-section-toggle" id="trimSectionToggle">▼</span>
+                </div>
+
+                <div class="trim-section-body" id="trimSectionBody" style="display: none;">
+                    <!-- Upload Area -->
+                    <div style="text-align: center;">
+                        <div class="trim-upload-box" id="trimUploadBox" onclick="document.getElementById('trimFileInput').click()">
+                            <input type="file" id="trimFileInput" class="file-input" accept=".csv,.txt" multiple style="display:none;">
+                            <span style="font-size:1.1rem;">📄</span>
+                            <span style="color:#e4e4e7; font-size:0.85rem; font-weight:600;">Upload Historical Files</span>
+                            <span style="color:#52525b; font-size:0.75rem;">CSV / TXT</span>
+                        </div>
+                    </div>
+
+                    <!-- File List -->
+                    <div class="trim-file-list" id="trimFileList">
+                        <div class="trim-file-list-header">
+                            <span class="trim-file-list-title">Uploaded Files</span>
+                            <span class="trim-file-count" id="trimFileCount"></span>
+                            <button class="trim-add-more-btn" onclick="document.getElementById('trimFileInput').click()">＋ Add More</button>
+                            <button class="trim-clear-all-btn" onclick="clearAllTrimFiles()">✕ Clear All</button>
+                        </div>
+                        <div class="trim-files-area" id="trimFilesArea"></div>
+                    </div>
+
+                    <!-- Row Configuration -->
+                    <div class="trim-row-config">
+                        <div class="trim-row-field">
+                            <label for="trimHeaderRow">Header Row</label>
+                            <input type="number" id="trimHeaderRow" min="1" value="1">
+                        </div>
+                        <div class="trim-row-field">
+                            <label for="trimUnitRow">Unit Row</label>
+                            <input type="number" id="trimUnitRow" min="1" value="2">
+                        </div>
+                        <div class="trim-row-field">
+                            <label for="trimDataRow">Row of First Data</label>
+                            <input type="number" id="trimDataRow" min="1" value="3">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="trim-actions">
+                        <button class="trim-btn trim-process-btn" id="trimProcessBtn" onclick="processTrimData()" disabled>✂️ Trim & Preview</button>
+                        <button class="trim-btn trim-download-btn" id="trimDownloadBtn" onclick="downloadAllTrimmedFiles()">⬇ Download All Trimmed</button>
+                    </div>
+
+                    <!-- Status Message -->
+                    <div class="trim-status" id="trimStatus"></div>
+
+                    <!-- Preview -->
+                    <div class="trim-preview" id="trimPreview">
+                        <div class="trim-preview-header">
+                            <h4 id="trimPreviewTitle">Preview</h4>
+                            <div class="trim-preview-stats" id="trimPreviewStats"></div>
+                        </div>
+                        <div class="trim-preview-table-wrapper">
+                            <table class="trim-preview-table" id="trimPreviewTable"></table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -10152,6 +10541,566 @@
             }
             // Initialize Zipper Section
             initializeZipperSection();
+        });
+
+        /* ============================================
+           TRIM CSV DATA SECTION
+           ============================================ */
+
+        let trimFiles = []; // Array of { id, name, content }
+        let trimResults = []; // Array of { name, trimmedContent } after processing
+        let trimIdCounter = 0;
+        let trimActivePreviewId = null; // Currently previewed file id
+
+        function toggleTrimSection() {
+            const header = document.getElementById('trimSectionHeader');
+            const body = document.getElementById('trimSectionBody');
+
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                header.classList.add('expanded');
+            } else {
+                body.style.display = 'none';
+                header.classList.remove('expanded');
+            }
+        }
+
+        function initializeTrimSection() {
+            const fileInput = document.getElementById('trimFileInput');
+            const uploadBox = document.getElementById('trimUploadBox');
+
+            if (fileInput) {
+                fileInput.addEventListener('change', handleTrimFileUpload);
+            }
+
+            if (uploadBox) {
+                uploadBox.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadBox.classList.add('dragover');
+                });
+                uploadBox.addEventListener('dragleave', () => {
+                    uploadBox.classList.remove('dragover');
+                });
+                uploadBox.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadBox.classList.remove('dragover');
+                    const files = Array.from(e.dataTransfer.files).filter(f => f.name.match(/\.(csv|txt)$/i));
+                    if (files.length > 0) addTrimFiles(files);
+                });
+            }
+        }
+
+        function handleTrimFileUpload(e) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) addTrimFiles(files);
+            e.target.value = '';
+        }
+
+        function addTrimFiles(files) {
+            let loaded = 0;
+            const firstNewId = trimIdCounter + 1;
+            files.forEach(file => {
+                const id = ++trimIdCounter;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    trimFiles.push({ id, name: file.name, content: e.target.result });
+                    loaded++;
+                    if (loaded === files.length) {
+                        // Select the first newly added file for preview
+                        trimActivePreviewId = firstNewId;
+                        trimResults = [];
+                        document.getElementById('trimStatus').style.display = 'none';
+                        document.getElementById('trimDownloadBtn').style.display = 'none';
+                        renderTrimFileList();
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        function renderTrimFileList() {
+            const listEl = document.getElementById('trimFileList');
+            const areaEl = document.getElementById('trimFilesArea');
+            const countEl = document.getElementById('trimFileCount');
+
+            if (trimFiles.length === 0) {
+                listEl.style.display = 'none';
+                document.getElementById('trimProcessBtn').disabled = true;
+                trimActivePreviewId = null;
+                return;
+            }
+
+            listEl.style.display = 'block';
+            countEl.textContent = trimFiles.length + ' file' + (trimFiles.length !== 1 ? 's' : '');
+            document.getElementById('trimProcessBtn').disabled = false;
+
+            // Auto-select first file if none active
+            if (trimActivePreviewId === null || !trimFiles.find(f => f.id === trimActivePreviewId)) {
+                trimActivePreviewId = trimFiles[0].id;
+            }
+
+            areaEl.innerHTML = '';
+            trimFiles.forEach(f => {
+                const pill = document.createElement('div');
+                pill.className = 'trim-file-pill' + (f.id === trimActivePreviewId ? ' active' : '');
+                pill.onclick = function(e) {
+                    if (e.target.classList.contains('trim-pill-remove')) return;
+                    previewTrimFileRaw(f.id);
+                };
+                pill.innerHTML = `<span class="trim-pill-icon">📄</span>` +
+                    `<span class="trim-pill-name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span>` +
+                    `<span class="trim-pill-remove" onclick="event.stopPropagation(); removeTrimFile(${f.id})" title="Remove">✕</span>`;
+                areaEl.appendChild(pill);
+            });
+
+            showRawPreview(trimActivePreviewId);
+        }
+
+        function removeTrimFile(id) {
+            trimFiles = trimFiles.filter(f => f.id !== id);
+            if (trimActivePreviewId === id) {
+                trimActivePreviewId = trimFiles.length > 0 ? trimFiles[0].id : null;
+            }
+            trimResults = [];
+            document.getElementById('trimStatus').style.display = 'none';
+            document.getElementById('trimDownloadBtn').style.display = 'none';
+            renderTrimFileList();
+            if (trimFiles.length === 0) {
+                document.getElementById('trimPreview').style.display = 'none';
+            }
+        }
+
+        function clearAllTrimFiles() {
+            trimFiles = [];
+            trimResults = [];
+            trimActivePreviewId = null;
+            renderTrimFileList();
+            document.getElementById('trimPreview').style.display = 'none';
+            document.getElementById('trimPreviewTable').innerHTML = '';
+            document.getElementById('trimStatus').style.display = 'none';
+            document.getElementById('trimDownloadBtn').style.display = 'none';
+        }
+
+        function resetTrimPreview() {
+            trimResults = [];
+            document.getElementById('trimPreviewTable').innerHTML = '';
+            document.getElementById('trimStatus').style.display = 'none';
+            document.getElementById('trimDownloadBtn').style.display = 'none';
+            // Don't hide preview — raw preview will repopulate it
+        }
+
+        function previewTrimFileRaw(id) {
+            trimActivePreviewId = id;
+            // Update active pill styling
+            document.querySelectorAll('.trim-file-pill').forEach(el => el.classList.remove('active'));
+            const pills = document.querySelectorAll('.trim-file-pill');
+            const idx = trimFiles.findIndex(f => f.id === id);
+            if (idx >= 0 && pills[idx]) pills[idx].classList.add('active');
+            showRawPreview(id);
+        }
+
+        function showRawPreview(id) {
+            const file = trimFiles.find(f => f.id === id);
+            if (!file) {
+                document.getElementById('trimPreview').style.display = 'none';
+                return;
+            }
+
+            const headerRowNum = parseInt(document.getElementById('trimHeaderRow').value) || 1;
+            const unitRowNum = parseInt(document.getElementById('trimUnitRow').value) || 2;
+            const dataRowNum = parseInt(document.getElementById('trimDataRow').value) || 3;
+
+            const allLines = file.content.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+            while (allLines.length > 0 && allLines[allLines.length - 1].trim() === '') {
+                allLines.pop();
+            }
+
+            if (allLines.length === 0) return;
+
+            const delimiter = trimDetectDelimiter(allLines[Math.min(headerRowNum - 1, allLines.length - 1)]);
+            const maxPreviewRows = 30;
+            const showRows = Math.min(allLines.length, maxPreviewRows);
+
+            const previewEl = document.getElementById('trimPreview');
+            const tableEl = document.getElementById('trimPreviewTable');
+            const statsEl = document.getElementById('trimPreviewStats');
+            const titleEl = document.getElementById('trimPreviewTitle');
+
+            titleEl.innerHTML = `Preview <span class="trim-preview-badge raw">Raw</span>`;
+            statsEl.innerHTML = `<span>${escapeHtml(file.name)}</span> &middot; <span>${allLines.length}</span> total rows`;
+
+            let html = '<thead><tr><th style="color:#71717a; width: 40px;">#</th>';
+            // Use header row for column names if available
+            if (headerRowNum <= allLines.length) {
+                const headers = trimParseCSVLine(allLines[headerRowNum - 1], delimiter);
+                headers.forEach(h => {
+                    html += `<th>${escapeHtml(h.trim())}</th>`;
+                });
+            } else {
+                const firstFields = trimParseCSVLine(allLines[0], delimiter);
+                firstFields.forEach((_, ci) => {
+                    html += `<th>Col ${ci + 1}</th>`;
+                });
+            }
+            html += '</tr></thead><tbody>';
+
+            for (let i = 0; i < showRows; i++) {
+                const rowNum = i + 1;
+                const fields = trimParseCSVLine(allLines[i], delimiter);
+                const isHeader = rowNum === headerRowNum;
+                const isUnit = (unitRowNum > headerRowNum && unitRowNum < dataRowNum) && rowNum === unitRowNum;
+                const isData = rowNum >= dataRowNum;
+                const isKept = isHeader || isUnit || isData;
+
+                let rowClass = '';
+                if (!isKept) rowClass = 'skipped-row';
+                else if (isHeader) rowClass = 'header-row';
+                else if (isUnit) rowClass = 'unit-row';
+
+                html += `<tr class="${rowClass}">`;
+                html += `<td style="color:#52525b; font-size:0.75rem; text-align:right; padding-right:8px; user-select:none;">${rowNum}</td>`;
+                fields.forEach(f => {
+                    html += `<td>${escapeHtml(f.trim())}</td>`;
+                });
+                html += '</tr>';
+            }
+
+            if (allLines.length > maxPreviewRows) {
+                const colCount = trimParseCSVLine(allLines[0], delimiter).length + 1;
+                html += `<tr><td colspan="${colCount}" style="text-align:center; color:#71717a; font-style:italic; padding:10px;">... and ${allLines.length - maxPreviewRows} more rows</td></tr>`;
+            }
+
+            html += '</tbody>';
+            tableEl.innerHTML = html;
+            previewEl.style.display = 'block';
+        }
+
+        function trimDetectDelimiter(line) {
+            const commaCount = (line.match(/,/g) || []).length;
+            const tabCount = (line.match(/\t/g) || []).length;
+            const semicolonCount = (line.match(/;/g) || []).length;
+            if (tabCount > commaCount && tabCount > semicolonCount) return '\t';
+            if (semicolonCount > commaCount) return ';';
+            return ',';
+        }
+
+        function trimParseCSVLine(line, delimiter) {
+            const fields = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const ch = line[i];
+                if (inQuotes) {
+                    if (ch === '"' && i + 1 < line.length && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else if (ch === '"') {
+                        inQuotes = false;
+                    } else {
+                        current += ch;
+                    }
+                } else {
+                    if (ch === '"') {
+                        inQuotes = true;
+                    } else if (ch === delimiter) {
+                        fields.push(current);
+                        current = '';
+                    } else {
+                        current += ch;
+                    }
+                }
+            }
+            fields.push(current);
+            return fields;
+        }
+
+        function trimNormalizeDateTime(value) {
+            if (typeof value !== 'string') return value;
+            const v = value.trim();
+
+            // MM:DD:YYYY:HH:MM:SS — all colons (common TXT format)
+            let match = v.match(/^(\d{1,2}):(\d{1,2}):(\d{4}):(\d{1,2}):(\d{2}):(\d{2})$/);
+            if (match) return match[1] + '/' + match[2] + '/' + match[3] + ' ' + match[4] + ':' + match[5] + ':' + match[6];
+
+            // MM:DD:YYYY:HH:MM — all colons, missing seconds
+            match = v.match(/^(\d{1,2}):(\d{1,2}):(\d{4}):(\d{1,2}):(\d{2})$/);
+            if (match) return match[1] + '/' + match[2] + '/' + match[3] + ' ' + match[4] + ':' + match[5] + ':00';
+
+            // MM/DD/YYYY:HH:MM:SS — colon between date and time
+            match = v.match(/^(\d{1,2}\/\d{1,2}\/\d{4}):(\d{1,2}:\d{2}:\d{2})$/);
+            if (match) return match[1] + ' ' + match[2];
+
+            // MM/DD/YYYY:HH:MM — colon between date and time, missing seconds
+            match = v.match(/^(\d{1,2}\/\d{1,2}\/\d{4}):(\d{1,2}:\d{2})$/);
+            if (match) return match[1] + ' ' + match[2] + ':00';
+
+            // YYYY-MM-DD:HH:MM:SS — ISO-ish with colon separator
+            match = v.match(/^(\d{4}-\d{2}-\d{2}):(\d{1,2}:\d{2}:\d{2})$/);
+            if (match) {
+                const parts = match[1].split('-');
+                return parts[1] + '/' + parts[2] + '/' + parts[0] + ' ' + match[2];
+            }
+
+            // YYYY-MM-DD:HH:MM — ISO-ish with colon separator, missing seconds
+            match = v.match(/^(\d{4}-\d{2}-\d{2}):(\d{1,2}:\d{2})$/);
+            if (match) {
+                const parts = match[1].split('-');
+                return parts[1] + '/' + parts[2] + '/' + parts[0] + ' ' + match[2] + ':00';
+            }
+
+            // YYYY-MM-DD HH:MM:SS or YYYY-MM-DDTHH:MM:SS — convert to MM/DD/YYYY HH:MM:SS
+            match = v.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{1,2}:\d{2}:\d{2})$/);
+            if (match) return match[2] + '/' + match[3] + '/' + match[1] + ' ' + match[4];
+
+            // YYYY-MM-DD HH:MM or YYYY-MM-DDTHH:MM — missing seconds
+            match = v.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{1,2}:\d{2})$/);
+            if (match) return match[2] + '/' + match[3] + '/' + match[1] + ' ' + match[4] + ':00';
+
+            // MM/DD/YYYY HH:MM:SS — already correct format
+            match = v.match(/^(\d{1,2}\/\d{1,2}\/\d{4})\s+(\d{1,2}:\d{2}:\d{2})(\s*[AaPp][Mm])?$/);
+            if (match) return match[1] + ' ' + match[2] + (match[3] || '');
+
+            // MM/DD/YYYY HH:MM — correct date format but missing seconds
+            match = v.match(/^(\d{1,2}\/\d{1,2}\/\d{4})\s+(\d{1,2}:\d{2})(\s*[AaPp][Mm])?$/);
+            if (match) return match[1] + ' ' + match[2] + ':00' + (match[3] || '');
+
+            // HH:MM:SS only — leave as-is
+            match = v.match(/^(\d{1,2}:\d{2}:\d{2})(\s*[AaPp][Mm])?$/);
+            if (match) return match[1] + (match[2] || '');
+
+            // HH:MM only — add seconds
+            match = v.match(/^(\d{1,2}:\d{2})(\s*[AaPp][Mm])?$/);
+            if (match) return match[1] + ':00' + (match[2] || '');
+
+            return value;
+        }
+
+        function trimFindTimeColumnIndices(headers) {
+            const indices = [];
+            const timeKeywords = ['time', 'date', 'timestamp', 'datetime', 'date_time', 'elapsed'];
+            headers.forEach((h, i) => {
+                const lower = h.toLowerCase().trim();
+                if (timeKeywords.some(kw => lower.includes(kw))) {
+                    indices.push(i);
+                }
+            });
+            return indices;
+        }
+
+        function trimFieldToCsv(fields) {
+            return fields.map(f => {
+                if (f.includes(',') || f.includes('"') || f.includes('\n')) {
+                    return '"' + f.replace(/"/g, '""') + '"';
+                }
+                return f;
+            }).join(',');
+        }
+
+        function trimSingleFile(fileContent, headerRowNum, unitRowNum, dataRowNum) {
+            const allLines = fileContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+            while (allLines.length > 0 && allLines[allLines.length - 1].trim() === '') {
+                allLines.pop();
+            }
+
+            if (headerRowNum > allLines.length) {
+                return { error: `Header row ${headerRowNum} exceeds total rows (${allLines.length}).` };
+            }
+
+            const srcDelimiter = trimDetectDelimiter(allLines[headerRowNum - 1]);
+            const outputLines = [];
+            const headers = trimParseCSVLine(allLines[headerRowNum - 1], srcDelimiter);
+            outputLines.push(trimFieldToCsv(headers));
+
+            let hasUnitRow = false;
+            if (unitRowNum > headerRowNum && unitRowNum < dataRowNum && unitRowNum <= allLines.length) {
+                const unitFields = trimParseCSVLine(allLines[unitRowNum - 1], srcDelimiter);
+                outputLines.push(trimFieldToCsv(unitFields));
+                hasUnitRow = true;
+            }
+
+            const timeColIndices = trimFindTimeColumnIndices(headers);
+
+            for (let i = dataRowNum - 1; i < allLines.length; i++) {
+                if (allLines[i].trim() === '') continue;
+                const fields = trimParseCSVLine(allLines[i], srcDelimiter);
+                timeColIndices.forEach(idx => {
+                    if (idx < fields.length) {
+                        fields[idx] = trimNormalizeDateTime(fields[idx]);
+                    }
+                });
+                outputLines.push(trimFieldToCsv(fields));
+            }
+
+            const totalOriginalRows = allLines.length;
+            const keptDataRows = outputLines.length - 1 - (hasUnitRow ? 1 : 0);
+            const removedRows = totalOriginalRows - outputLines.length;
+            const timeNames = timeColIndices.map(i => headers[i]);
+            const converted = srcDelimiter !== ',';
+
+            return {
+                trimmedContent: outputLines.join('\n') + '\n',
+                outputLines,
+                delimiter: ',',
+                hasUnitRow,
+                headers,
+                removedRows,
+                keptDataRows,
+                timeNames,
+                converted
+            };
+        }
+
+        function processTrimData() {
+            if (trimFiles.length === 0) return;
+
+            const headerRowNum = parseInt(document.getElementById('trimHeaderRow').value) || 1;
+            const unitRowNum = parseInt(document.getElementById('trimUnitRow').value) || 2;
+            const dataRowNum = parseInt(document.getElementById('trimDataRow').value) || 3;
+
+            trimResults = [];
+            let totalRemoved = 0;
+            let totalKeptData = 0;
+            let allTimeNames = new Set();
+            let convertedCount = 0;
+            let errors = [];
+            let firstResult = null;
+
+            trimFiles.forEach(f => {
+                const result = trimSingleFile(f.content, headerRowNum, unitRowNum, dataRowNum);
+                if (result.error) {
+                    errors.push(`${f.name}: ${result.error}`);
+                } else {
+                    trimResults.push({ name: f.name, trimmedContent: result.trimmedContent });
+                    totalRemoved += result.removedRows;
+                    totalKeptData += result.keptDataRows;
+                    result.timeNames.forEach(n => allTimeNames.add(n));
+                    if (result.converted) convertedCount++;
+                    if (!firstResult) firstResult = result;
+                }
+            });
+
+            if (errors.length > 0) {
+                showTrimStatus('error', errors.join(' | '));
+                return;
+            }
+
+            const filesWord = trimFiles.length === 1 ? '1 file' : trimFiles.length + ' files';
+            const timeFixNote = allTimeNames.size > 0
+                ? ` Time columns (${Array.from(allTimeNames).join(', ')}) normalized to mm/dd/yyyy hh:mm:ss.`
+                : '';
+            const convertNote = convertedCount > 0
+                ? ` ${convertedCount} file${convertedCount !== 1 ? 's' : ''} converted to CSV.`
+                : '';
+
+            showTrimStatus('success',
+                `Processed ${filesWord}. Removed ${totalRemoved} row${totalRemoved !== 1 ? 's' : ''} total. ` +
+                `Data rows kept: ${totalKeptData}.${timeFixNote}${convertNote}`
+            );
+
+            document.getElementById('trimDownloadBtn').style.display = 'inline-block';
+
+            if (firstResult) {
+                renderTrimPreview(firstResult.outputLines, firstResult.delimiter, firstResult.hasUnitRow,
+                    trimFiles.length > 1 ? trimFiles[0].name : null);
+            }
+        }
+
+        function showTrimStatus(type, message) {
+            const el = document.getElementById('trimStatus');
+            el.className = 'trim-status ' + type;
+            el.textContent = message;
+            el.style.display = 'block';
+        }
+
+        function renderTrimPreview(lines, delimiter, hasUnitRow, fileName) {
+            const previewEl = document.getElementById('trimPreview');
+            const tableEl = document.getElementById('trimPreviewTable');
+            const statsEl = document.getElementById('trimPreviewStats');
+            const titleEl = document.getElementById('trimPreviewTitle');
+
+            titleEl.innerHTML = `Preview <span class="trim-preview-badge trimmed">Trimmed</span>`;
+
+            const dataLineCount = lines.length - 1 - (hasUnitRow ? 1 : 0);
+            const maxPreviewRows = 20;
+
+            let statsHtml = `<span>${lines[0].split(delimiter).length}</span> columns &middot; <span>${dataLineCount}</span> data rows`;
+            if (fileName) {
+                statsHtml = `<span>${escapeHtml(fileName)}</span> &middot; ` + statsHtml;
+            }
+            statsEl.innerHTML = statsHtml;
+
+            const headers = trimParseCSVLine(lines[0], delimiter);
+            let html = '<thead><tr>';
+            headers.forEach(h => {
+                html += `<th>${escapeHtml(h.trim())}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            let dataStart = 1;
+            if (hasUnitRow) {
+                const unitFields = trimParseCSVLine(lines[1], delimiter);
+                html += '<tr class="unit-row">';
+                unitFields.forEach(f => {
+                    html += `<td>${escapeHtml(f.trim())}</td>`;
+                });
+                html += '</tr>';
+                dataStart = 2;
+            }
+
+            const dataEnd = Math.min(dataStart + maxPreviewRows, lines.length);
+            for (let i = dataStart; i < dataEnd; i++) {
+                const fields = trimParseCSVLine(lines[i], delimiter);
+                html += '<tr>';
+                fields.forEach(f => {
+                    html += `<td>${escapeHtml(f.trim())}</td>`;
+                });
+                html += '</tr>';
+            }
+
+            if (dataLineCount > maxPreviewRows) {
+                html += `<tr><td colspan="${headers.length}" style="text-align:center; color:#71717a; font-style:italic; padding:10px;">... and ${dataLineCount - maxPreviewRows} more rows</td></tr>`;
+            }
+
+            html += '</tbody>';
+            tableEl.innerHTML = html;
+            previewEl.style.display = 'block';
+        }
+
+        async function downloadAllTrimmedFiles() {
+            if (trimResults.length === 0) return;
+
+            const btn = document.getElementById('trimDownloadBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+
+            for (let i = 0; i < trimResults.length; i++) {
+                const r = trimResults[i];
+                const baseName = r.name.replace(/\.[^.]+$/, '');
+                const downloadName = baseName + '_trimmed.csv';
+
+                btn.textContent = `⬇ Downloading ${i + 1} of ${trimResults.length}...`;
+
+                const blob = new Blob([r.trimmedContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = downloadName;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                // Wait before revoking and starting next download
+                await new Promise(resolve => setTimeout(resolve, 750));
+                URL.revokeObjectURL(url);
+            }
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTrimSection();
         });
 
         /* ============================================
