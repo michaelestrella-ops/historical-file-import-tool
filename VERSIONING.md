@@ -4,8 +4,17 @@ This repository contains multiple versions of the Historical File Import Tool.
 
 ## Available Versions
 
-### Version 8 (Current - Live)
-- **Location**: `index.html` (main entry point) and `versions/v8/Historical File Import Tool.html`
+### Version 9 (Current - Live)
+- **Location**: `index.html` (main entry point) and `versions/v9/Historical File Import Tool.html`
+- **Branch**: `main`
+- **Features**:
+  - Select All now only selects filtered/visible channels (respects search and avg range filters)
+  - Select All excludes columns with average values <= 0
+  - Chart resize performance fix: rAF-throttled resize during panel/column drag instead of per-pixel updates
+  - Disabled Chart.js animations and enabled min-max decimation for smoother rendering with many channels
+
+### Version 8
+- **Location**: `versions/v8/Historical File Import Tool.html`
 - **Branch**: `main`
 - **Features**:
   - Black background theme: replaced all blue/purple-tinted dark colors with true black and neutral grays
@@ -66,7 +75,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 ## Accessing Versions
 
 ### GitHub Pages
-- **Current (v8)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **Current (v9)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **v8**: Open `versions/v8/Historical File Import Tool.html`
 - **v7**: Open `versions/v7/Historical File Import Tool.html`
 - **v6**: Open `versions/v6/Historical File Import Tool.html`
 - **v5**: Open `versions/v5/Historical File Import Tool.html`
@@ -76,7 +86,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 - **v1**: Checkout the `v1.0.0` tag or view `versions/v1/Historical File Import Tool.html`
 
 ### Local Access
-- **v8**: Open `index.html` or `versions/v8/Historical File Import Tool.html`
+- **v9**: Open `index.html` or `versions/v9/Historical File Import Tool.html`
+- **v8**: Open `versions/v8/Historical File Import Tool.html`
 - **v7**: Open `versions/v7/Historical File Import Tool.html`
 - **v6**: Open `versions/v6/Historical File Import Tool.html`
 - **v5**: Open `versions/v5/Historical File Import Tool.html`
