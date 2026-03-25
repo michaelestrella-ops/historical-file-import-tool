@@ -4,8 +4,18 @@ This repository contains multiple versions of the Historical File Import Tool.
 
 ## Available Versions
 
-### Version 10 (Current - Live)
-- **Location**: `index.html` (main entry point) and `versions/v10/Historical File Import Tool.html`
+### Version 11 (Current - Live)
+- **Location**: `index.html` (main entry point) and `versions/v11/Historical File Import Tool.html`
+- **Branch**: `main`
+- **Features**:
+  - Info tooltips on all section headers: hover the (i) icon to see what each section does
+  - Tooltips added to Column Mapping Results, Header Comparison, Channel Identifier, Swing Well Mapping, and Historical File Prep
+  - Fixed overflow clipping so tooltips render correctly when sections are collapsed
+  - Compact inline upload zone styling for Header Comparison, Channel Identifier, and Swing Well Mapping
+  - Renamed section: Trim CSV Data (WL Historicals) → Historical File Prep (Wireline)
+
+### Version 10
+- **Location**: `versions/v10/Historical File Import Tool.html`
 - **Branch**: `main`
 - **Features**:
   - New Trim CSV Data (WL Historicals) section: multi-file upload, trim rows, normalize datetime to mm/dd/yyyy hh:mm:ss
@@ -87,7 +97,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 ## Accessing Versions
 
 ### GitHub Pages
-- **Current (v10)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **Current (v11)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **v10**: Open `versions/v10/Historical File Import Tool.html`
 - **v9**: Open `versions/v9/Historical File Import Tool.html`
 - **v8**: Open `versions/v8/Historical File Import Tool.html`
 - **v7**: Open `versions/v7/Historical File Import Tool.html`
@@ -99,7 +110,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 - **v1**: Checkout the `v1.0.0` tag or view `versions/v1/Historical File Import Tool.html`
 
 ### Local Access
-- **v10**: Open `index.html` or `versions/v10/Historical File Import Tool.html`
+- **v11**: Open `index.html` or `versions/v11/Historical File Import Tool.html`
+- **v10**: Open `versions/v10/Historical File Import Tool.html`
 - **v9**: Open `versions/v9/Historical File Import Tool.html`
 - **v8**: Open `versions/v8/Historical File Import Tool.html`
 - **v7**: Open `versions/v7/Historical File Import Tool.html`
