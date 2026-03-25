@@ -9578,8 +9578,8 @@
             };
             
             // Add non-zero columns to main container
-            nonZeroColumns.forEach((col, index) => {
-                container.appendChild(createColumnItem(col, index));
+            nonZeroColumns.forEach((col) => {
+                container.appendChild(createColumnItem(col, col.originalIndex));
             });
             
             // Add zero/negative average columns in collapsible section if any exist
@@ -9600,8 +9600,8 @@
                 `;
                 
                 const zeroBody = zeroSection.querySelector('.zero-columns-body');
-                zeroOrNegativeColumns.forEach((col, index) => {
-                    zeroBody.appendChild(createColumnItem(col, nonZeroColumns.length + index));
+                zeroOrNegativeColumns.forEach((col) => {
+                    zeroBody.appendChild(createColumnItem(col, col.originalIndex));
                 });
                 
                 container.appendChild(zeroSection);
