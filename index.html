@@ -62,7 +62,7 @@
             margin-bottom: 30px;
             text-align: center;
             border: 1px solid #2a2a2a;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .mapping-section-header {
@@ -4850,6 +4850,58 @@
             border: 1px solid #166534;
         }
 
+        .trim-preview-title-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .trim-preview-tabs {
+            display: flex;
+            gap: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #27272a;
+        }
+
+        .trim-preview-tab {
+            background: #18181b;
+            color: #71717a;
+            border: none;
+            padding: 4px 14px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-transform: uppercase;
+        }
+
+        .trim-preview-tab:hover {
+            background: #27272a;
+            color: #a1a1aa;
+        }
+
+        .trim-preview-tab.active-original {
+            background: #1e293b;
+            color: #94a3b8;
+        }
+
+        .trim-preview-tab.active-original:hover {
+            background: #1e293b;
+            color: #94a3b8;
+        }
+
+        .trim-preview-tab.active-trimmed {
+            background: #052e16;
+            color: #4ade80;
+        }
+
+        .trim-preview-tab.active-trimmed:hover {
+            background: #052e16;
+            color: #4ade80;
+        }
+
         .trim-preview-table .header-row td {
             color: #a5b4fc;
             font-weight: 600;
@@ -5528,7 +5580,14 @@
                     <!-- Preview -->
                     <div class="trim-preview" id="trimPreview">
                         <div class="trim-preview-header">
-                            <h4 id="trimPreviewTitle">Preview</h4>
+                            <div class="trim-preview-title-area">
+                                <h4 id="trimPreviewTitle">Preview</h4>
+                                <div class="trim-preview-tabs" id="trimPreviewTabs" style="display:none;">
+                                    <button class="trim-preview-tab" id="trimTabOriginal" onclick="setTrimPreviewMode('original')">ORIGINAL</button>
+                                    <button class="trim-preview-tab" id="trimTabTrimmed" onclick="setTrimPreviewMode('trimmed')">TRIMMED</button>
+                                </div>
+                                <span class="trim-preview-badge raw" id="trimRawBadge">Raw</span>
+                            </div>
                             <div class="trim-preview-stats" id="trimPreviewStats"></div>
                         </div>
                         <div class="trim-preview-table-wrapper">
@@ -10542,9 +10601,10 @@
            ============================================ */
 
         let trimFiles = []; // Array of { id, name, content }
-        let trimResults = []; // Array of { name, trimmedContent } after processing
+        let trimResults = []; // Array of { id, name, trimmedContent, outputLines, delimiter, hasUnitRow } after processing
         let trimIdCounter = 0;
         let trimActivePreviewId = null; // Currently previewed file id
+        let trimPreviewMode = 'original'; // 'original' or 'trimmed'
 
         function toggleTrimSection() {
             const header = document.getElementById('trimSectionHeader');
@@ -10600,9 +10660,9 @@
                     trimFiles.push({ id, name: file.name, content: e.target.result });
                     loaded++;
                     if (loaded === files.length) {
-                        // Select the first newly added file for preview
                         trimActivePreviewId = firstNewId;
                         trimResults = [];
+                        trimPreviewMode = 'original';
                         document.getElementById('trimStatus').style.display = 'none';
                         document.getElementById('trimDownloadBtn').style.display = 'none';
                         renderTrimFileList();
@@ -10656,6 +10716,7 @@
                 trimActivePreviewId = trimFiles.length > 0 ? trimFiles[0].id : null;
             }
             trimResults = [];
+            trimPreviewMode = 'original';
             document.getElementById('trimStatus').style.display = 'none';
             document.getElementById('trimDownloadBtn').style.display = 'none';
             renderTrimFileList();
@@ -10668,6 +10729,7 @@
             trimFiles = [];
             trimResults = [];
             trimActivePreviewId = null;
+            trimPreviewMode = 'original';
             renderTrimFileList();
             document.getElementById('trimPreview').style.display = 'none';
             document.getElementById('trimPreviewTable').innerHTML = '';
@@ -10677,10 +10739,10 @@
 
         function resetTrimPreview() {
             trimResults = [];
+            trimPreviewMode = 'original';
             document.getElementById('trimPreviewTable').innerHTML = '';
             document.getElementById('trimStatus').style.display = 'none';
             document.getElementById('trimDownloadBtn').style.display = 'none';
-            // Don't hide preview — raw preview will repopulate it
         }
 
         function previewTrimFileRaw(id) {
@@ -10690,7 +10752,48 @@
             const pills = document.querySelectorAll('.trim-file-pill');
             const idx = trimFiles.findIndex(f => f.id === id);
             if (idx >= 0 && pills[idx]) pills[idx].classList.add('active');
+
+            if (trimPreviewMode === 'trimmed' && trimResults.length > 0) {
+                const result = trimResults.find(r => r.id === id);
+                if (result) {
+                    renderTrimPreview(result.outputLines, result.delimiter, result.hasUnitRow,
+                        trimFiles.length > 1 ? result.name : null);
+                    return;
+                }
+            }
             showRawPreview(id);
+        }
+
+        function setTrimPreviewMode(mode) {
+            trimPreviewMode = mode;
+            updateTrimPreviewTabs();
+
+            if (mode === 'original') {
+                showRawPreview(trimActivePreviewId);
+            } else {
+                const result = trimResults.find(r => r.id === trimActivePreviewId) || trimResults[0];
+                if (result) {
+                    renderTrimPreview(result.outputLines, result.delimiter, result.hasUnitRow,
+                        trimFiles.length > 1 ? result.name : null);
+                }
+            }
+        }
+
+        function updateTrimPreviewTabs() {
+            const tabsEl = document.getElementById('trimPreviewTabs');
+            const badgeEl = document.getElementById('trimRawBadge');
+            const origTab = document.getElementById('trimTabOriginal');
+            const trimTab = document.getElementById('trimTabTrimmed');
+
+            if (trimResults.length > 0) {
+                tabsEl.style.display = 'flex';
+                badgeEl.style.display = 'none';
+                origTab.className = 'trim-preview-tab' + (trimPreviewMode === 'original' ? ' active-original' : '');
+                trimTab.className = 'trim-preview-tab' + (trimPreviewMode === 'trimmed' ? ' active-trimmed' : '');
+            } else {
+                tabsEl.style.display = 'none';
+                badgeEl.style.display = '';
+            }
         }
 
         function showRawPreview(id) {
@@ -10718,9 +10821,8 @@
             const previewEl = document.getElementById('trimPreview');
             const tableEl = document.getElementById('trimPreviewTable');
             const statsEl = document.getElementById('trimPreviewStats');
-            const titleEl = document.getElementById('trimPreviewTitle');
 
-            titleEl.innerHTML = `Preview <span class="trim-preview-badge raw">Raw</span>`;
+            updateTrimPreviewTabs();
             statsEl.innerHTML = `<span>${escapeHtml(file.name)}</span> &middot; <span>${allLines.length}</span> total rows`;
 
             let html = '<thead><tr><th style="color:#71717a; width: 40px;">#</th>';
@@ -10964,7 +11066,14 @@
                 if (result.error) {
                     errors.push(`${f.name}: ${result.error}`);
                 } else {
-                    trimResults.push({ name: f.name, trimmedContent: result.trimmedContent });
+                    trimResults.push({
+                        id: f.id,
+                        name: f.name,
+                        trimmedContent: result.trimmedContent,
+                        outputLines: result.outputLines,
+                        delimiter: result.delimiter,
+                        hasUnitRow: result.hasUnitRow
+                    });
                     totalRemoved += result.removedRows;
                     totalKeptData += result.keptDataRows;
                     result.timeNames.forEach(n => allTimeNames.add(n));
@@ -10994,6 +11103,7 @@
             document.getElementById('trimDownloadBtn').style.display = 'inline-block';
 
             if (firstResult) {
+                trimPreviewMode = 'trimmed';
                 renderTrimPreview(firstResult.outputLines, firstResult.delimiter, firstResult.hasUnitRow,
                     trimFiles.length > 1 ? trimFiles[0].name : null);
             }
@@ -11010,9 +11120,8 @@
             const previewEl = document.getElementById('trimPreview');
             const tableEl = document.getElementById('trimPreviewTable');
             const statsEl = document.getElementById('trimPreviewStats');
-            const titleEl = document.getElementById('trimPreviewTitle');
 
-            titleEl.innerHTML = `Preview <span class="trim-preview-badge trimmed">Trimmed</span>`;
+            updateTrimPreviewTabs();
 
             const dataLineCount = lines.length - 1 - (hasUnitRow ? 1 : 0);
             const maxPreviewRows = 20;

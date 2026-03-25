@@ -4,8 +4,21 @@ This repository contains multiple versions of the Historical File Import Tool.
 
 ## Available Versions
 
-### Version 11 (Current - Live)
-- **Location**: `index.html` (main entry point) and `versions/v11/Historical File Import Tool.html`
+### Version 13 (Current - Live)
+- **Location**: `index.html` (main entry point) and `versions/v13/Historical File Import Tool.html`
+- **Branch**: `main`
+- **Features**:
+  - Now generated from CSV-TXT Column Mapper.html via sync-to-historical.ps1 build script
+  - Ensures both tools stay in sync automatically
+
+### Version 12
+- **Location**: `versions/v12/Historical File Import Tool.html`
+- **Branch**: `main`
+- **Features**:
+  - Original/Trimmed preview tabs in Historical File Prep section
+
+### Version 11
+- **Location**: `versions/v11/Historical File Import Tool.html`
 - **Branch**: `main`
 - **Features**:
   - Info tooltips on all section headers: hover the (i) icon to see what each section does
@@ -97,7 +110,9 @@ This repository contains multiple versions of the Historical File Import Tool.
 ## Accessing Versions
 
 ### GitHub Pages
-- **Current (v11)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **Current (v13)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **v12**: Open `versions/v12/Historical File Import Tool.html`
+- **v11**: Open `versions/v11/Historical File Import Tool.html`
 - **v10**: Open `versions/v10/Historical File Import Tool.html`
 - **v9**: Open `versions/v9/Historical File Import Tool.html`
 - **v8**: Open `versions/v8/Historical File Import Tool.html`
@@ -110,7 +125,9 @@ This repository contains multiple versions of the Historical File Import Tool.
 - **v1**: Checkout the `v1.0.0` tag or view `versions/v1/Historical File Import Tool.html`
 
 ### Local Access
-- **v11**: Open `index.html` or `versions/v11/Historical File Import Tool.html`
+- **v13**: Open `index.html` or `versions/v13/Historical File Import Tool.html`
+- **v12**: Open `versions/v12/Historical File Import Tool.html`
+- **v11**: Open `versions/v11/Historical File Import Tool.html`
 - **v10**: Open `versions/v10/Historical File Import Tool.html`
 - **v9**: Open `versions/v9/Historical File Import Tool.html`
 - **v8**: Open `versions/v8/Historical File Import Tool.html`
