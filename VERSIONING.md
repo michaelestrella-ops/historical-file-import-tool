@@ -4,12 +4,19 @@ This repository contains multiple versions of the Historical File Import Tool.
 
 ## Available Versions
 
-### Version 13 (Current - Live)
-- **Location**: `index.html` (main entry point) and `versions/v13/Historical File Import Tool.html`
+### Version 15 (Current - Live)
+- **Location**: `index.html` (GitHub Pages entry) and `versions/v15/Historical File Import Tool.html`
+- **Canonical source**: Repository root `Historical File Import Tool.html` (this is what ships; not the CSV-TXT Column Mapper file)
 - **Branch**: `main`
 - **Features**:
-  - Now generated from CSV-TXT Column Mapper.html via sync-to-historical.ps1 build script
-  - Ensures both tools stay in sync automatically
+  - Channel Identifier (PDF vs CSV): units read from the row immediately after the header when that row is non-numeric; shown after averages in column chips, chart legend, and series tooltips; that row is excluded from plotted data
+  - Values ≤ 0 section: collapsible block on its own full-width row so expanding it does not stretch other column chips; same flex-wrap chip layout as the main list with single-line labels (no wrapping)
+
+### Version 13
+- **Location**: `versions/v13/Historical File Import Tool.html`
+- **Branch**: `main`
+- **Features**:
+  - Built from CSV-TXT Column Mapper.html via `sync-to-historical.ps1` for parity with the mapper tool
 
 ### Version 12
 - **Location**: `versions/v12/Historical File Import Tool.html`
@@ -110,7 +117,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 ## Accessing Versions
 
 ### GitHub Pages
-- **Current (v13)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **Current (v15)**: https://michaelestrella-ops.github.io/historical-file-import-tool/
+- **v15**: Open `versions/v15/Historical File Import Tool.html`
 - **v12**: Open `versions/v12/Historical File Import Tool.html`
 - **v11**: Open `versions/v11/Historical File Import Tool.html`
 - **v10**: Open `versions/v10/Historical File Import Tool.html`
@@ -125,7 +133,8 @@ This repository contains multiple versions of the Historical File Import Tool.
 - **v1**: Checkout the `v1.0.0` tag or view `versions/v1/Historical File Import Tool.html`
 
 ### Local Access
-- **v13**: Open `index.html` or `versions/v13/Historical File Import Tool.html`
+- **v15**: Open `index.html`, `Historical File Import Tool.html`, or `versions/v15/Historical File Import Tool.html`
+- **v13**: Open `versions/v13/Historical File Import Tool.html`
 - **v12**: Open `versions/v12/Historical File Import Tool.html`
 - **v11**: Open `versions/v11/Historical File Import Tool.html`
 - **v10**: Open `versions/v10/Historical File Import Tool.html`

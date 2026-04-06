@@ -2952,6 +2952,7 @@
         .column-checkboxes {
             display: flex;
             flex-wrap: wrap;
+            align-items: flex-start;
             gap: 6px;
         }
 
@@ -2965,7 +2966,12 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: 1px solid transparent;
-            min-width: 0;
+        }
+
+        /* Same chip sizing as main row; avoid grid/flex shrinking that wraps labels */
+        #columnCheckboxes .column-checkbox-item {
+            flex-shrink: 0;
+            min-width: max-content;
         }
 
         .column-checkbox-item:hover {
@@ -2988,6 +2994,7 @@
         .column-checkbox-label {
             color: #e4e4e7;
             font-size: 0.8rem;
+            white-space: nowrap;
         }
 
         .column-color-dot {
@@ -3031,9 +3038,11 @@
             display: none;
         }
 
-        /* Values ≤ 0 Collapsible Section */
+        /* Values ≤ 0 Collapsible Section (full-width row so expanding body does not stretch sibling cards) */
         .zero-columns-section {
-            grid-column: 1 / -1;
+            flex: 0 0 100%;
+            width: 100%;
+            box-sizing: border-box;
             margin-top: 12px;
             border: 1px solid #2a2a2a;
             border-radius: 8px;
@@ -3089,13 +3098,16 @@
         }
 
         .zero-columns-body.expanded {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
             gap: 6px;
         }
 
         .zero-columns-hint {
-            grid-column: 1 / -1;
+            flex: 0 0 100%;
+            width: 100%;
+            box-sizing: border-box;
             color: #52525b;
             font-size: 0.7rem;
             margin-bottom: 6px;
@@ -8805,6 +8817,8 @@
         let pdfZoomDebounceTimer = null;
         let channelCsvData = null;
         let channelCsvHeaders = [];
+        /** Per-column unit strings from the row immediately after the header row (when column count matches). */
+        let channelCsvColumnUnits = {};
         let channelCsvRawText = null; // Store raw CSV for reprocessing
         let selectedColumns = new Set();
         let comparisonChartInstance = null;
@@ -9275,10 +9289,25 @@
             
             // Parse headers from specified row
             channelCsvHeaders = parseCSVLine(lines[headerIndex]);
-            
-            // Parse data rows (all rows after the header row)
+            channelCsvColumnUnits = {};
+
+            // Row after headers: units when column count matches; that row is excluded from plotted data
+            let dataStartIndex = headerIndex + 1;
+            const unitsLineIndex = headerIndex + 1;
+            if (unitsLineIndex < lines.length) {
+                const unitValues = parseCSVLine(lines[unitsLineIndex]);
+                if (unitValues.length === channelCsvHeaders.length && csvRowLooksLikeUnitsRow(unitValues)) {
+                    channelCsvHeaders.forEach((h, idx) => {
+                        const u = (unitValues[idx] || '').trim();
+                        if (u) channelCsvColumnUnits[h] = u;
+                    });
+                    dataStartIndex = headerIndex + 2;
+                }
+            }
+
+            // Parse data rows (after header row, skipping units row when detected)
             channelCsvData = [];
-            for (let i = headerIndex + 1; i < lines.length; i++) {
+            for (let i = dataStartIndex; i < lines.length; i++) {
                 const values = parseCSVLine(lines[i]);
                 if (values.length === channelCsvHeaders.length) {
                     const row = {};
@@ -9353,6 +9382,18 @@
             if (compScalePopup) compScalePopup.classList.remove('show');
         }
 
+        /** True only if no non-empty cell looks numeric — then row is treated as units, not data. */
+        function csvRowLooksLikeUnitsRow(values) {
+            if (!values || values.length === 0) return false;
+            for (const cell of values) {
+                const t = (cell || '').trim();
+                if (t !== '' && !isNaN(parseFloat(t))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // Parse a CSV line (handling quoted values)
         function parseCSVLine(line) {
             const result = [];
@@ -9406,6 +9447,19 @@
             if (absValue >= 1) return value.toFixed(2);
             if (absValue >= 0.01) return value.toFixed(3);
             return value.toExponential(2);
+        }
+
+        function formatAvgWithOptionalUnit(header, avgFormatted) {
+            const u = channelCsvColumnUnits && channelCsvColumnUnits[header];
+            if (!u) return `avg: ${avgFormatted}`;
+            return `avg: ${avgFormatted} [${u}]`;
+        }
+
+        function escapeHtmlAttr(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;');
         }
 
         // Populate column selector with checkboxes
@@ -9492,6 +9546,10 @@
             const createColumnItem = (col, colorIndex) => {
                 const color = col.isNumeric ? channelColors[colorIndex % channelColors.length] : '#4a4a5a';
                 const avgDisplay = col.isNumeric ? formatAverage(col.average) : '';
+                const unit = (channelCsvColumnUnits && channelCsvColumnUnits[col.header]) || '';
+                const avgTitle = col.isNumeric
+                    ? `Average: ${avgDisplay}${unit ? ' · ' + unit : ''}`
+                    : '';
                 
                 const item = document.createElement('label');
                 item.className = 'column-checkbox-item' + (col.isNumeric ? '' : ' non-numeric');
@@ -9504,7 +9562,7 @@
                     <input type="checkbox" value="${col.header}" onchange="toggleColumn('${col.header.replace(/'/g, "\\'")}', this.checked)" ${col.isNumeric ? '' : 'disabled'}>
                     <span class="column-color-dot" style="background-color: ${color}"></span>
                     <span class="column-checkbox-label" title="${col.header}${col.isNumeric ? '' : ' (non-numeric)'}">${col.header}</span>
-                    ${col.isNumeric ? `<span class="column-average" title="Average: ${avgDisplay}">avg: ${avgDisplay}</span>` : '<span class="non-numeric-badge">text</span>'}
+                    ${col.isNumeric ? `<span class="column-average" title="${escapeHtmlAttr(avgTitle)}">${formatAvgWithOptionalUnit(col.header, avgDisplay)}</span>` : '<span class="non-numeric-badge">text</span>'}
                 `;
                 return item;
             };
@@ -9781,12 +9839,14 @@
                 if (selectedColumns.has(header)) {
                     const color = channelColors[colorIndex % channelColors.length];
                     const average = calculateChannelColumnAverage(header);
+                    const u = channelCsvColumnUnits[header];
+                    const seriesLabel = u ? `${header} [${u}]` : header;
                     const rawData = sampleIndices
                         ? sampleIndices.map(i => parseFloat(channelCsvData[i][header]) || 0)
                         : channelCsvData.map(row => parseFloat(row[header]) || 0);
                     
                     datasets.push({
-                        label: header,
+                        label: seriesLabel,
                         data: rawData,
                         borderColor: color,
                         backgroundColor: color + '20',
@@ -9810,7 +9870,7 @@
                 <div class="chart-legend-item">
                     <span class="chart-legend-color" style="background-color: ${item.color}"></span>
                     <span class="chart-legend-name" title="${item.name}">${item.name}</span>
-                    <span class="chart-legend-avg">avg: ${formatAverage(item.average)}</span>
+                    <span class="chart-legend-avg">${formatAvgWithOptionalUnit(item.name, formatAverage(item.average))}</span>
                 </div>
             `).join('');
             
@@ -10024,6 +10084,7 @@
         function clearCsvFile() {
             channelCsvData = null;
             channelCsvHeaders = [];
+            channelCsvColumnUnits = {};
             channelCsvRawText = null;
             selectedColumns.clear();
             comparisonChartLockedYMin = undefined;
